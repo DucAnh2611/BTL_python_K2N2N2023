@@ -60,3 +60,8 @@ class SubjectAvgPoint(SubjectStudentPointBase):
     midtermPoint : float
     fiftSecPoints : float
     lastTermPoint : float
+
+class ClassAndSubject(BaseModel):
+    grade: int 
+    subjectid: int
+    

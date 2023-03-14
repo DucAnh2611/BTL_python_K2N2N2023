@@ -16,7 +16,7 @@ def initDef():
  
 
     studentEachClass = 30
-    studentSum = classRoom * studentEachClass
+    studentSum = int((classRoom * studentEachClass * (endGrade - startGrade +1)) * 0.8)
     middleNameList = ["Hoàng", "Văn", "Quang", "Quốc", "Thị", "Minh"]
     firstNameList = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ", "Đặng", "Bùi", "Đỗ", "Hồ", "Ngô", "Dương" ,"Lý"]
 
@@ -26,7 +26,7 @@ def initDef():
         if(len(studentInClass.fetchall()) < studentEachClass):
             return classId
         else:
-            classIdNew = int(np.ceil(classRoom*np.random.random()))
+            classIdNew = int(np.ceil(classRoom *(endGrade - startGrade +1) * np.random.random()))
             studentEachClassNew = studentEachClass
             classRoomNew = classRoom
             return classIsReady(classIdNew, studentEachClassNew, classRoomNew)
@@ -37,7 +37,7 @@ def initDef():
         c.execute('''INSERT INTO "student"("name", "classId") VALUES (? ,?)''', [f'{firstName} {middleName} {lastName[0]}', classId])
 
     for eachstudent in range (0, studentSum):
-        classId = int(np.ceil(classRoom * np.random.random()))
+        classId = int(np.ceil(classRoom *(endGrade - startGrade +1) * np.random.random()))
         setStudentToClass(classIsReady(classId, studentEachClass, classRoom))
 
 
@@ -55,13 +55,14 @@ def initDef():
     ]
     c.executemany('''INSERT INTO "subject"("name") VALUES (?)''', listSubject)
     tiLeDiem = 0.95
+    minimumRandom = np.round(np.random.random(),2)
     for student in range(0, studentSum):
         subjectLen = c.execute('''SELECT * FROM "subject" ''')
         for subject in range(0, len(subjectLen.fetchall())):
-            fifFirst = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
-            firstLast = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
-            fifSec = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
-            secLast = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
+            fifFirst = np.round(((np.random.random()*(1 - minimumRandom)) + minimumRandom )*10,1) if np.random.random() < tiLeDiem else  0.0
+            firstLast =  np.round(((np.random.random()*(1 - minimumRandom)) + minimumRandom )*10,1) if np.random.random() < tiLeDiem else  0.0
+            fifSec =  np.round(((np.random.random()*(1 - minimumRandom)) + minimumRandom )*10,1) if np.random.random() < tiLeDiem else  0.0
+            secLast =  np.round(((np.random.random()*(1 - minimumRandom)) + minimumRandom )*10,1) if np.random.random() < tiLeDiem else  0.0
             finnalLast = np.round(((fifFirst*0.3 + firstLast*0.7) + (fifSec*0.3 + secLast*0.7))/2,2)
                     
             c.execute('''

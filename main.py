@@ -16,7 +16,7 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 # initDef()
 
-@app.get('/', response_class=HTMLResponse)
+@app.get('/', response_class=HTMLResponse, tags=['Trang chủ'])
 def home():
     html_content = '''
     <html>
@@ -83,7 +83,7 @@ def home():
                         <li>pandas: </li>
                     </ul>
                 </ul>
-                <li>A????? Hoàng Chí Hiếu</li>
+                <li>A41174 Hoàng Chí Hiếu</li>
                 <ul>
                     <li> GET:</li>
                     <ul>
@@ -102,10 +102,11 @@ def home():
     </html>
     '''
     return HTMLResponse(content=html_content, status_code=200)
+
 #Manh
 #np
-@app.get('/subject/DiemCuaMon')
-def get_max_point_subject(
+@app.get('/subject/DiemTongKetCuaMon', tags=["Điểm tổng kết của môn"])
+def get_point_subject(
     studentid: Union[int, None] = None, 
     subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -115,7 +116,6 @@ def get_max_point_subject(
         studentPoint= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid));
         if np.array(studentPoint).size !=0:
             df = pd.DataFrame.from_dict(studentPoint)
-            print(df)
             diem = df['Điểm tổng kết'][0]
             name = df['Họ và tên'][0]
             subject = df['Môn học'][0]
@@ -131,10 +131,10 @@ def get_max_point_subject(
                     "errMsg": "Không tồn tại môn học"})
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
-    
+
 #DucAnh
 #pd:
-@app.get('/subject/DiemTongKetTrungBinhHocSinh')
+@app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Điểm tổng kết trung bình'])
 def get_class_point_subject(
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -153,7 +153,7 @@ def get_class_point_subject(
         })
 
 #np:
-@app.post('/subject/CapNhapDiemTrungBinhMon')
+@app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Cập nhật điểm trung bình'])
 def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get_db)):
     result = ""
     errorList = []

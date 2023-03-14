@@ -58,10 +58,10 @@ def initDef():
     for student in range(0, studentSum):
         subjectLen = c.execute('''SELECT * FROM "subject" ''')
         for subject in range(0, len(subjectLen.fetchall())):
-            fifFirst = np.round(np.random.random()*10) if np.random.random() < tiLeDiem else  0.0
-            firstLast = np.round(np.random.random()*10) if np.random.random() < tiLeDiem else  0.0
-            fifSec = np.round(np.random.random()*10) if np.random.random() < tiLeDiem else  0.0
-            secLast = np.round(np.random.random()*10) if np.random.random() < tiLeDiem else  0.0
+            fifFirst = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
+            firstLast = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
+            fifSec = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
+            secLast = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
             finnalLast = ((fifFirst*0.3 + firstLast*0.7) + (fifSec*0.3 + secLast*0.7))/2
                     
             c.execute('''

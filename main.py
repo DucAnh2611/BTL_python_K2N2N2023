@@ -158,6 +158,11 @@ def get_class_point_subject(
         })
 
 #np:
+@app.get('/statistic/subject/{subjectId}')
+def get_table_point_subject(subjectId : int):
+    return {"subjectId": subjectId}
+
+
 @app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Cập nhật điểm trung bình'])
 def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get_db)):
     result = ""
@@ -259,3 +264,55 @@ def post_addNewStudent(
 # def create_subject(subject: schemas.SubjectBase, db: Session = Depends(get_db)):
 #     return data.SubjectMethod.create_subject(db, subject)
 
+
+
+
+# Dũng
+# np
+@app.get('/subject/SinhVienTruotMon')
+def get_point_less_than_4 (
+    studentid: Union[int, None] = None,
+    db: Session = Depends(get_db)
+):
+    if (studentid != None):
+        studentFailed = data.SubjectAndStudentMethod.get_all_student(db, schemas.SubjectStudentPointBase(studentId = studentid))
+        if np.array(studentFailed).size != 0:
+            df = pd.DataFrame.from_dict(studentFailed)
+            diem = df['Điểm tổng kết'][0]
+            name = df['Họ tên'][0]
+            subject = df['Môn học'][0]
+            if diem < 4:
+                return f'{name} trượt môn {subject} với số điểm {diem}'
+        else:
+            raise HTTPException(status_code=404, detail={
+                "field": "studentid",
+                "errMsg": "Chưa có thông tin"
+            })
+    else:
+        raise HTTPException(status_code=404, detail={
+            "Chưa có thông tin (studentid: int, subjectid: int)"
+        })
+
+# @app.post('/subject/GuiMaLopLaySoHS')
+# def 
+# DiemTBMontheoKhoi
+
+
+# pd
+@app.get('/subject/SoSVTruotMonMoiMonHoc')
+def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
+    all_Point = data.SubjectAndStudentMethod.get_all_student(db)
+    df = pd.DataFrame.from_dict(all_Point)
+    df['Trượt'] = np.where(df['Điểm tổng kết'] < 4, 'Trượt', 'Không trượt')
+    df_subjects = df[['Môn học', 'Trượt']]
+    # Số học sinh trượt môn học theo từng môn
+    df_failed = df_subjects[df_subjects['Trượt'] == 'Trượt'].groupby(['Môn học']).size().reset_index(name='Số lượng')
+    # Biểu đồ cột
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(df_failed['Môn học'], df_failed['Số lượng'])
+    ax.set_title('Số lượng học sinh trượt môn học', fontsize=16)
+    ax.set_xlabel('Môn học', fontsize=12)
+    ax.set_ylabel('Số lượng', fontsize=12)
+    ax.tick_params(axis='both', labelsize=10)
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()

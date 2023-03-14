@@ -11,6 +11,8 @@ import sql_app.data as data
 from database import SessionLocal, engine, get_db
 from sql_app.default import initDef 
 from fastapi.responses import HTMLResponse
+import webbrowser
+import os
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -104,14 +106,14 @@ def home():
     '''
     return HTMLResponse(content=html_content, status_code=200)
 
-#Manh
-#np
-@app.get('/subject/DiemTongKetCuaMon', tags=["Điểm tổng kết của môn"])
-def get_point_subject(
+#region Manh
+# np
+@app.get('/subject/DiemCuaMon')
+def get_max_point_subject(
     studentid: Union[int, None] = None, 
     subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)
-):  
+):
     
     if(studentid != None or subjectid !=None):
         studentPoint= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid));
@@ -132,8 +134,11 @@ def get_point_subject(
                     "errMsg": "Không tồn tại môn học"})
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
+    
 
-#DucAnh
+#endregion
+
+#region DucAnh
 #pd:
 @app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Điểm tổng kết trung bình'])
 def get_class_point_subject(
@@ -209,6 +214,48 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
                 }
             
     return result
+
+#endregion
+
+#region Dung
+#endregion
+
+#region Hieu
+
+#region pandas câu 1
+
+@app.get('/student_score/whoHasIncreasedTheirScores')
+def get_highestForward(
+    db: Session = Depends(get_db)
+):
+    studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
+    table = pd.DataFrame.from_dict(studentList).to_html()
+    text_file = open("student_list_1.html", "w")
+    text_file.write(table)
+    text_file.close()
+    webbrowser.open(os.getcwd() + '/student_list_1.html')
+    return f'Kết quả được hiển thị ở cửa sổ mới...'
+
+#endregion
+
+#region pandas câu 2 có ý tưởng thì đổi sau
+
+@app.post('/student/studentWithFirstName')
+def post_addNewStudent(
+    firstName: Union[str, None],
+    db: Session = Depends(get_db)
+):
+    studentList = data.StudentWithSpecificFirstName.get_list(firstName, db)
+    table = pd.DataFrame.from_dict(studentList).to_html()
+    text_file = open("student_list_2.html", "w")
+    text_file.write(table)
+    text_file.close()
+    webbrowser.open(os.getcwd() + '/student_list_2.html')
+    return f'Kết quả được hiển thị ở cửa sổ mới...'
+    
+#endregion
+
+#endregion
 
 # @app.post('/class', response_model = schemas.ClassBase)
 # def create_class(classroom: schemas.ClassBase, db: Session = Depends(get_db)):

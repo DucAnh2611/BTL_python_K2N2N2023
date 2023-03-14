@@ -32,7 +32,11 @@ class SubjectStudent(Base):
     
     studentId = Column(Integer, ForeignKey("student.id"), primary_key=True, index=True, nullable=False)
     subjectId = Column(Integer, ForeignKey("subject.id"), primary_key=True, index= True, nullable=False)
-    point = Column(REAL, nullable=False)
+    pointFifFirst = Column(REAL, index=True, nullable=False)
+    pointFifSec = Column(REAL, index=True, nullable=False)
+    pointFirstLast = Column(REAL, index=True, nullable=False)
+    pointSecLast = Column(REAL, index=True, nullable=False)
+    finnalSum = Column(REAL, index=True, nullable=False)
     
     studentPoint = relationship("Student", back_populates="points")
     subjectPoint = relationship("Subject", back_populates="points")

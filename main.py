@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-# initDef()
+initDef()
 
 @app.get('/', response_class=HTMLResponse)
 def home():

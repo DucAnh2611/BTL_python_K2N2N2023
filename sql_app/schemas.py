@@ -45,7 +45,14 @@ class Student(StudentBase):
     class Config:
         orm_mode = True
 
-class SubjectStudentPoint():
+class SubjectStudentPoint(BaseModel):
+    studentid : int
+    subjectid: int
     class Config:
         orm_mode = True
-        
+
+class SubjectAvgPoint(SubjectStudentPointBase):
+    fiftFirstPoints : float
+    midtermPoint : float
+    fiftSecPoints : float
+    lastTermPoint : float

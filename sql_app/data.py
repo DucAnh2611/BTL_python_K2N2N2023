@@ -97,3 +97,21 @@ class SubjectAndStudentMethod:
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
                         models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).filter(models.Student.id == studentid).all()
+    
+class StudentWithIncreasingScoresMethod:
+    def get_list(db: Session):
+        return db.query(models.Student.name.label('Họ và tên'),
+                        models.Subject.name.label('Môn học'),
+                        models.SubjectStudent.pointFifFirst.label('Điểm 15p lần 1'),
+                        models.SubjectStudent.pointFifSec.label('Điểm 15p lần 2'),
+                        models.SubjectStudent.pointFirstLast.label('Điểm 15p lần 3'),
+                        models.SubjectStudent.pointSecLast.label('Điểm cuối kỳ 2'),
+                        models.SubjectStudent.finnalSum.label('Điểm tổng kết')).filter(and_(
+                                                            models.SubjectStudent.pointFifFirst <= models.SubjectStudent.pointFifSec,
+                                                            models.SubjectStudent.pointFifSec <= models.SubjectStudent.pointFirstLast,
+                                                            models.SubjectStudent.pointFirstLast <= models.SubjectStudent.pointSecLast
+                                                        )).join(models.Student).join(models.Subject).order_by(models.Student.id, models.Subject.id).all()
+    
+class StudentWithSpecificFirstName:
+    def get_list(firstname: Union[str, None], db: Session):
+        return db.query(models.Student.name.label('Họ và tên')).filter(models.Student.name.like(firstname + "%")).all()

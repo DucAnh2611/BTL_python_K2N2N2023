@@ -54,7 +54,7 @@ def initDef():
         ["Thể dục"]
     ]
     c.executemany('''INSERT INTO "subject"("name") VALUES (?)''', listSubject)
-    tiLeDiem = 0.7
+    tiLeDiem = 0.95
     for student in range(0, studentSum):
         subjectLen = c.execute('''SELECT * FROM "subject" ''')
         for subject in range(0, len(subjectLen.fetchall())):

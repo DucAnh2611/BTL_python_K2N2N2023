@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Union
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import sql_app.models as models
 import sql_app.schemas as schemas
 import sql_app.data as data

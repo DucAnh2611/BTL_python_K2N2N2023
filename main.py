@@ -306,8 +306,10 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     df = pd.DataFrame.from_dict(all_Point)
     df['Trượt'] = np.where(df['Điểm tổng kết'] < 4, 'Trượt', 'Không trượt')
     df_subjects = df[['Môn học', 'Trượt']]
+
     # Số học sinh trượt môn học theo từng môn
     df_failed = df_subjects[df_subjects['Trượt'] == 'Trượt'].groupby(['Môn học']).size().reset_index(name='Số lượng')
+  
     # Biểu đồ cột
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.bar(df_failed['Môn học'], df_failed['Số lượng'])
@@ -317,3 +319,7 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     ax.tick_params(axis='both', labelsize=10)
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
+    
+    html_chart = df_failed.to_html()
+    return html_chart
+

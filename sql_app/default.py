@@ -4,7 +4,7 @@ import random
 import string
 
 def initDef():
-    connect = sqlite3.connect('DiemHocSinh_Python_K2N2_test.db')
+    connect = sqlite3.connect('DiemHocSinh_Python_K2N2.db')
     c = connect.cursor()
 
     startGrade = 10
@@ -62,7 +62,7 @@ def initDef():
             firstLast = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
             fifSec = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
             secLast = np.round(np.random.random()*10,1) if np.random.random() < tiLeDiem else  0.0
-            finnalLast = ((fifFirst*0.3 + firstLast*0.7) + (fifSec*0.3 + secLast*0.7))/2
+            finnalLast = np.round(((fifFirst*0.3 + firstLast*0.7) + (fifSec*0.3 + secLast*0.7))/2,2)
                     
             c.execute('''
                       INSERT INTO "subjectStudent"("studentId","subjectId", "pointFifFirst", "pointFifSec", "pointFirstLast", "pointSecLast", "finnalSum") 

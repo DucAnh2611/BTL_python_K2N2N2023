@@ -116,7 +116,7 @@ def get_max_point_subject(
         if np.array(studentPoint).size !=0:
             df = pd.DataFrame.from_dict(studentPoint)
             print(df)
-            diem = df['Điểm'][0]
+            diem = df['Điểm tổng kết'][0]
             name = df['Họ và tên'][0]
             subject = df['Môn học'][0]
             return {"result": f'Điểm của {name} với môn {subject} là: {diem}'}
@@ -142,8 +142,8 @@ def get_class_point_subject(
     if( studentid != None):
         studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid);
         df = pd.DataFrame.from_dict(studentInClass)
-        df['Điểm'] = df['Điểm'].fillna(0)
-        diemTrungBinh = np.round(df['Điểm'].sum() / len(df['Điểm'].to_list()), 1)
+        df['Điểm tổng kết'] = df['Điểm tổng kết'].fillna(0)
+        diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
         name = df['Họ và tên'][0]
         return f'Điểm trung bình của {name} là: {diemTrungBinh}'
     else: 
@@ -176,11 +176,19 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
                 (pointList.fiftFirstPoints * 0.15 + pointList.midtermPoint *0.35) + 
                 (pointList.fiftSecPoints * 0.15 + pointList.lastTermPoint *0.35)
                 , 2)
-            updateData = data.SubjectStudentPointMethod.update_point(db, schemas.SubjectStudentPointCreate(studentId=pointList.studentId, subjectId=pointList.subjectId, point=pointCal))
+            updateData = data.SubjectStudentPointMethod.update_point(db, schemas.SubjectStudentPointCreate(
+                studentId=pointList.studentId,
+                subjectId=pointList.subjectId,
+                pointFifFirst = pointList.fiftFirstPoints,
+                pointFifSec = pointList.fiftSecPoints,
+                pointFirstLast = pointList.midtermPoint,
+                pointSecLast = pointList.lastTermPoint, 
+                finnalSum = np.round(((pointList.fiftFirstPoints * 0.3 + pointList.midtermPoint *0.7)+(pointList.fiftSecPoints * 0.3 + pointList.lastTermPoint *0.7))/2 ,1)
+                ))
             result = {
                 "Họ và tên": data.StudentMethod.get_byid(db, pointList.studentId)[0].Name,
                 "Môn học" : data.SubjectMethod.get_subject_id(db, pointList.subjectId)[0].name,
-                "Điểm": updateData.point
+                "Điểm": updateData.finnalSum
             }
         else:
             if np.array(data.SubjectMethod.get_subject_id(db, pointList.subjectId)).size == 0:

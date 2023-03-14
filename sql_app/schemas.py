@@ -31,7 +31,11 @@ class SubjectStudentPointBase(BaseModel):
     subjectId: int
 
 class SubjectStudentPointCreate(SubjectStudentPointBase):
-    point: float
+    pointFifFirst: int
+    pointFifSec: int
+    pointFirstLast: int
+    pointSecLast: int
+    finnalSum: int
     class Config:
         orm_mode = True
 

@@ -49,7 +49,15 @@ class StudentMethod:
 
 class SubjectStudentPointMethod:
     def create_point(db: Session, point: schemas.SubjectStudentPointCreate):
-        db_point = models.SubjectStudent( studentId = point.studentId, subjectId = point.subjectId, point = point.point)
+        db_point = models.SubjectStudent(
+            studentId = point.studentId,
+            subjectId = point.subjectId,
+            pointFifFirst = point.pointFifFirst,
+            pointFifSec = point.pointFifSec,
+            pointFirstLast = point.pointFirstLast,
+            pointSecLast = point.pointSecLast,
+            finnalSum = point.finnalSum
+        )
         db.add(db_point)
         db.commit()
         db.refresh(db_point)
@@ -57,7 +65,7 @@ class SubjectStudentPointMethod:
     def get_student_point(db: Session, studentSubject: schemas.SubjectStudentPointBase):
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
-                        models.SubjectStudent.point.label('Điểm')).join(models.Student).join(models.Subject).filter(
+                        models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).filter(
             and_(
                 models.SubjectStudent.studentId == studentSubject.studentId,
                 models.SubjectStudent.subjectId == studentSubject.subjectId
@@ -69,7 +77,13 @@ class SubjectStudentPointMethod:
                 models.SubjectStudent.studentId == point.studentId,
                 models.SubjectStudent.subjectId == point.subjectId
             )
-        ).update({"point": point.point})
+        ).update({
+            "pointFifFirst": point.pointFifFirst,
+            "pointFifSec" : point.pointFifSec,
+            "pointFirstLast" : point.pointFirstLast,
+            "pointSecLast" : point.pointSecLast,
+            "finnalSum" : point.finnalSum
+        })
         db.commit()
         return db.query(models.SubjectStudent).filter(
             and_(
@@ -82,4 +96,4 @@ class SubjectAndStudentMethod:
     def get_all_student(db: Session, studentid: Union[int, None]):
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
-                        models.SubjectStudent.point.label('Điểm')).join(models.Student).join(models.Subject).filter(models.Student.id == studentid).all()
+                        models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).filter(models.Student.id == studentid).all()

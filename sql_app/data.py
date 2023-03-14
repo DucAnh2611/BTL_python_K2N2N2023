@@ -34,6 +34,8 @@ class SubjectMethod:
         return subject
     def get_all(db:Session):
         return db.query(models.Subject).all()
+    def get_subject_id(db:Session, id: int):
+        return db.query(models.Subject).filter(models.Subject.id == id).all()
     
 class StudentMethod:
     def create_student(db: Session, student: schemas.StudentBase):
@@ -42,6 +44,8 @@ class StudentMethod:
         db.commit()
         db.refresh(db_student)
         return db_student
+    def get_byid(db: Session, studentid: int):
+        return db.query(models.Student.id.label("ID"), models.Student.name.label("Name")).filter(models.Student.id == studentid).all()
 
 class SubjectStudentPointMethod:
     def create_point(db: Session, point: schemas.SubjectStudentPointCreate):
@@ -50,23 +54,32 @@ class SubjectStudentPointMethod:
         db.commit()
         db.refresh(db_point)
         return db_point
+    def get_student_point(db: Session, studentSubject: schemas.SubjectStudentPointBase):
+        return db.query(models.Student.name.label('Họ và tên'),
+                        models.Subject.name.label('Môn học'),
+                        models.SubjectStudent.point.label('Điểm')).join(models.Student).join(models.Subject).filter(
+            and_(
+                models.SubjectStudent.studentId == studentSubject.studentId,
+                models.SubjectStudent.subjectId == studentSubject.subjectId
+            )
+        ).all()
+    def update_point(db: Session, point: schemas.SubjectStudentPointCreate):
+        db_point_update = db.query(models.SubjectStudent).filter(
+            and_(
+                models.SubjectStudent.studentId == point.studentId,
+                models.SubjectStudent.subjectId == point.subjectId
+            )
+        ).update({"point": point.point})
+        db.commit()
+        return db.query(models.SubjectStudent).filter(
+            and_(
+                models.SubjectStudent.studentId == point.studentId,
+                models.SubjectStudent.subjectId == point.subjectId
+            )
+        ).first()
         
 class SubjectAndStudentMethod:
-    def get_all_student(db: Session, studentid: Union[int, None], studentname: Union[str, None]):
+    def get_all_student(db: Session, studentid: Union[int, None]):
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
-                        models.SubjectStudent.point.label('Điểm')).join(models.Student).join(models.Subject).filter( 
-            or_(
-                models.Student.id == studentid,
-                models.Student.name == studentname
-            )).all()
-class SubjectPointMethod:
-    def get_student_point(db: Session, studentid: Union[int, None]):
-        return db.query(models.Student.name.label('Họ và tên'),
-                        models.Subject.name.label('Môn học'),
-                        models.SubjectStudent.point.label('Điểm')).join(models.Student).join(models.Subject).filter( 
-            or_(
-                models.Student.id == studentid,
-                models.Student.name == studentname,
-                models.Subject.id == subjectid
-            )).all()
+                        models.SubjectStudent.point.label('Điểm')).join(models.Student).join(models.Subject).filter(models.Student.id == studentid).all()

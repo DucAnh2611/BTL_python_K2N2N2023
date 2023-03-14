@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, FastAPI, HTTPException
+from fastapi import FastAPI, Depends, FastAPI, HTTPException, Path
 from starlette.responses import FileResponse 
 from sqlalchemy.orm import Session
 from typing import Union
@@ -102,20 +102,33 @@ def home():
     </html>
     '''
     return HTMLResponse(content=html_content, status_code=200)
-
+#Manh
+#np
 @app.get('/subject/DiemCuaMon')
 def get_max_point_subject(
-    studentid: Union[int, None] = None,
-    subjectid: Union[str, None] = None,
+    studentid: Union[int, None] = None, 
+    subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)
-):
+):  
+    
     if(studentid != None or subjectid !=None):
-        studentInClass= data.SubjectPointMethod.get_student_point(db, studentid=studentid, subjectid= subjectid);
-        df = pd.DataFrame.from_dict(studentInClass)
-        diem = df['Điểm'][0]
-        name = df['Họ và tên'][0]
-        subject = df['Môn học'][0]
-        return f'Điểm của {name} với môn {subject} là: {diem}'
+        studentPoint= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid));
+        if np.array(studentPoint).size !=0:
+            df = pd.DataFrame.from_dict(studentPoint)
+            print(df)
+            diem = df['Điểm'][0]
+            name = df['Họ và tên'][0]
+            subject = df['Môn học'][0]
+            return {"result": f'Điểm của {name} với môn {subject} là: {diem}'}
+        else:
+            if np.array(data.StudentMethod.get_byid(db, studentid=studentid)).size == 0:
+                raise HTTPException(status_code=404, detail= {
+                    "field": "studentid",
+                    "errMsg": "Không tồn tại sinh viên"})
+            elif np.array(data.SubjectMethod.get_subject_id(db, id= subjectid)).size == 0:
+                raise HTTPException(status_code=404, detail= {
+                    "field": "subjectid",
+                    "errMsg": "Không tồn tại môn học"})
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
     
@@ -158,29 +171,29 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
     if len(errorList) > 0:
         result = errorList
     else:
-        if data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=pointList.studentId, subjectId=pointList.subjectId)):
+        if np.array(data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=pointList.studentId, subjectId=pointList.subjectId))).size != 0:
             pointCal = np.round(
                 (pointList.fiftFirstPoints * 0.15 + pointList.midtermPoint *0.35) + 
                 (pointList.fiftSecPoints * 0.15 + pointList.lastTermPoint *0.35)
                 , 2)
             updateData = data.SubjectStudentPointMethod.update_point(db, schemas.SubjectStudentPointCreate(studentId=pointList.studentId, subjectId=pointList.subjectId, point=pointCal))
             result = {
-                "Họ và tên": data.StudentMethod.get_byid(db, pointList.studentId)[0]['Name'],
+                "Họ và tên": data.StudentMethod.get_byid(db, pointList.studentId)[0].Name,
                 "Môn học" : data.SubjectMethod.get_subject_id(db, pointList.subjectId)[0].name,
                 "Điểm": updateData.point
             }
         else:
-            if data.SubjectMethod.get_subject_id(db, pointList.subjectId):
-                errorList.append({
+            if np.array(data.SubjectMethod.get_subject_id(db, pointList.subjectId)).size == 0:
+                result = {
                     "field": "subjectId",
                     "errMsg" : "Không tồn tại môn học"
-                })
-            elif data.StudentMethod.get_byid(db, studentid= pointList.studentId):
-                errorList.append({
+                }
+            elif np.array(data.StudentMethod.get_byid(db, studentid = pointList.studentId)).size == 0:
+                result = {
                     "field": "studentId",
                     "errMsg" : "Không tồn tại học sinh"
-                })
-            result = errorList
+                }
+            
     return result
 
 # @app.post('/class', response_model = schemas.ClassBase)

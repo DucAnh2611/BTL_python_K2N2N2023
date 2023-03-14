@@ -153,6 +153,11 @@ def get_class_point_subject(
         })
 
 #np:
+@app.get('/statistic/subject/{subjectId}')
+def get_table_point_subject(subjectId : int):
+    return {"subjectId": subjectId}
+
+
 @app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Cập nhật điểm trung bình'])
 def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get_db)):
     result = ""

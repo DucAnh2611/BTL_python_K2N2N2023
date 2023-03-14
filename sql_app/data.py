@@ -61,7 +61,7 @@ class SubjectAndStudentMethod:
                 models.Student.name == studentname
             )).all()
 class SubjectPointMethod:
-    def get_student_point(db: Session, studentid: Union[int, None],subjectid: Union[str, None]):
+    def get_student_point(db: Session, studentid: Union[int, None]):
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
                         models.SubjectStudent.point.label('Điểm')).join(models.Student).join(models.Subject).filter( 

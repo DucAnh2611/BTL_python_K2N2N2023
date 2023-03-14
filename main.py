@@ -21,6 +21,11 @@ def home():
     <html>
         <head>
             <title>Welcome BTL Python</title>
+            <style>
+                h1{
+                    text-align: center;
+                }
+            </style>
         </head>
         <body>
             <h1>Bài tập lớn môn Lập trình Python</h1>
@@ -111,6 +116,23 @@ def get_class_point_subject(
         return f'Điểm trung bình của {name} là: {diemTrungBinh}'
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, studentname: str)")
+
+@app.get('/subject/DiemCuaMon')
+def get_max_point_subject(
+    studentid: Union[int, None] = None,
+    studentname: Union[str, None] = None,
+    subjectid: Union[str, None] = None,
+    db: Session = Depends(get_db)
+):
+    if(studentid != None or studentname != None or subjectid !=None):
+        studentInClass= data.SubjectPointMethod.get_student_point(db, studentid=studentid, studentname=studentname, subjectid= subjectid);
+        df = pd.DataFrame.from_dict(studentInClass)
+        diem = df['Điểm'][0]
+        name = df['Họ và tên'][0]
+        subject = df['Môn học'][0]
+        return f'Điểm của {name} với môn {subject} là: {diem}'
+    else: 
+        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, studentname: str, subjectid: int)")
 
 # @app.post('/class', response_model = schemas.ClassBase)
 # def create_class(classroom: schemas.ClassBase, db: Session = Depends(get_db)):

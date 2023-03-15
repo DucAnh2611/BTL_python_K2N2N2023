@@ -73,6 +73,20 @@ class SubjectStudentPointMethod:
                 models.SubjectStudent.subjectId == studentSubject.subjectId
             )
         ).all()
+    def get_point_subjectid(db:Session, subjectid: int):
+            return db.query(models.Student.name.label('Họ và tên'),
+                    models.Classroom.name.label('Lớp'),
+                    models.Subject.name.label('Môn học'),
+                    models.SubjectStudent.pointFifFirst.label('Điểm 15p lần 1'),
+                    models.SubjectStudent.pointFifSec.label('Điểm 15p lần 2'),
+                    models.SubjectStudent.pointFirstLast.label('Điểm cuối kỳ 1'),
+                    models.SubjectStudent.pointSecLast.label('Điểm cuối kỳ 2'),
+                    models.SubjectStudent.finnalSum.label('Điểm tổng kết')).select_from(models.Student).join(models.Classroom).join(models.SubjectStudent).join(models.Subject).filter(
+        and_(
+            models.SubjectStudent.subjectId == subjectid
+        )
+    ).all()
+            
     def update_point(db: Session, point: schemas.SubjectStudentPointCreate):
         db_point_update = db.query(models.SubjectStudent).filter(
             and_(
@@ -99,7 +113,11 @@ class SubjectAndStudentMethod:
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
                         models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).filter(models.Student.id == studentid).all()
-        
+    
+       def get_all_student_all(db: Session):
+        return db.query(models.Student.name.label('Họ và tên'),
+                        models.Subject.name.label('Môn học'),
+                        models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).all()     
 
 class ClassAndStudentAndPointMethod:
     def get_all_point(db: Session, classSubject: schemas.ClassAndSubject):
@@ -112,6 +130,28 @@ class ClassAndStudentAndPointMethod:
                 and_(
                     models.Classroom.grade == classSubject.grade,
                     models.SubjectStudent.subjectId == classSubject.subjectid   
+                )
+            ).all()
+        def find_student_point(db: Session, studentInfor: schemas.StudentFind):
+        return db.query(
+            models.Student.name.label('Họ và tên'),
+            models.Classroom.name.label('Lớp'),
+            models.Subject.name.label('Môn'),
+            models.Classroom.grade.label('Khối'),                        
+            models.SubjectStudent.pointFifFirst.label('Điểm 15p lần 1'),
+            models.SubjectStudent.pointFifSec.label('Điểm 15p lần 2'),
+            models.SubjectStudent.pointFirstLast.label('Điểm cuối kỳ 1'),
+            models.SubjectStudent.pointSecLast.label('Điểm cuối kỳ 2'),
+            models.SubjectStudent.finnalSum.label('Điểm tổng kết')
+            ).select_from(models.Student).join(models.Classroom).join(models.SubjectStudent).join(models.Subject).filter(
+                or_(
+                    models.Student.id == studentInfor.studentid,
+                    models.Student.name == studentInfor.studentName,
+                    models.SubjectStudent.pointFifFirst == studentInfor.studentFifFirst,
+                    models.SubjectStudent.pointFifSec == studentInfor.studentFifSec,
+                    models.SubjectStudent.pointFirstLast == studentInfor.studentFirstLast,
+                    models.SubjectStudent.pointSecLast == studentInfor.studentSecLast,
+                    models.SubjectStudent.finnalSum == studentInfor.studentFinal
                 )
             ).all()
     

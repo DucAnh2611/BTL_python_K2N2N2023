@@ -262,8 +262,8 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 #region pandas câu 1
 
-@app.get('/student_score/whoHasIncreasedTheirScores')
-def get_highestForward(
+@app.get('/student_score/whoHasIncreasedTheirScores', tags=['Danh sách học sinh có điểm tăng dần theo từng bài kiểm tra'])
+def get_highest_forward(
     db: Session = Depends(get_db)
 ):
     studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
@@ -278,12 +278,12 @@ def get_highestForward(
 
 #region pandas câu 2 có ý tưởng thì đổi sau
 
-@app.post('/student/studentWithFirstName')
-def post_addNewStudent(
-    firstName: Union[str, None],
+@app.post('/student/classesScoresBySubject', tags=['Thống kê điểm trung bình của từng lớp theo môn học'])
+def post_class_scores_by_subject(
+    gradeSubject: schemas.ClassAndSubject,
     db: Session = Depends(get_db)
 ):
-    studentList = data.StudentWithSpecificFirstName.get_list(firstName, db)
+    studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
     table = pd.DataFrame.from_dict(studentList).to_html()
     text_file = open("student_list_2.html", "w")
     text_file.write(table)

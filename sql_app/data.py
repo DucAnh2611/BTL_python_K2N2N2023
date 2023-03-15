@@ -1,6 +1,7 @@
 
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_, not_
+from sqlalchemy import func
 from typing import Union
 import sql_app.models as models
 import sql_app.schemas as schemas
@@ -129,9 +130,18 @@ class StudentWithIncreasingScoresMethod:
                                                             models.SubjectStudent.pointFirstLast <= models.SubjectStudent.pointSecLast
                                                         )).join(models.Student).join(models.Subject).order_by(models.Student.id, models.Subject.id).all()
 
-class StudentWithSpecificFirstName:
-    def get_list(firstname: Union[str, None], db: Session):
-        return db.query(models.Student.name.label('Họ và tên')).filter(models.Student.name.like(firstname + "%")).all()
+class ClassAndSubjectMethod:
+    def get_list(gradeSubject: schemas.ClassAndSubject, db: Session):
+        return db.query(models.Classroom.name.label('Tên lớp'),
+                        func.avg(models.SubjectStudent.finnalSum).label('Điểm trung bình'),
+                        models.Subject.name.label('Môn học')
+                    ).filter(models.Classroom.id == models.Student.classId
+                    ).filter(models.Student.id == models.SubjectStudent.studentId
+                    ).filter(and_(
+                                models.SubjectStudent.subjectId == models.Subject.id,
+                                models.Classroom.grade == gradeSubject.grade,
+                                models.Subject.id == gradeSubject.subjectid
+                            )).group_by(models.Classroom.name).all()
     
 class GradePointMethod:
     def get_SubjectPointfromClass( db: Session, classSubject: schemas.ClassPoint):

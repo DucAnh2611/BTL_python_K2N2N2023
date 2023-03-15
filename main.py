@@ -366,7 +366,7 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 @app.get('/numpy/rankingProportion',
          tags = ['Hiện bảng xếp hạng điểm tổng kết và học lực tương ứng'],
-         description=['Gọi là chạy'])
+         description=('Gọi là chạy'))
 
 def get_ranking_proportion(
     db: Session = Depends(get_db)

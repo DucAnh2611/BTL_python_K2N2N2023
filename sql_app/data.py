@@ -145,4 +145,7 @@ class GradePointMethod:
                     models.SubjectStudent.subjectId == classSubject.subjectid   
                 )
             ).all()
-    
+
+class GetStudentInClass:
+    def getStuIn4(classID: Union[int, None], db: Session):
+        return db.query(models.Student).filter(models.Student.classId == classID).all()

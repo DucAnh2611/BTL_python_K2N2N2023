@@ -300,6 +300,16 @@ def get_point_less_than_4 (
 
 
 # pd
+@app.post('/statistic/class/grade')
+def post_static(classAndPoint: schemas.ClassAndSubject, db : Session = Depends(get_db)):
+    resClass = data.ClassAndStudentAndPointMethod.get_all_point(db, classAndPoint)
+    df = pd.DataFrame.from_dict(resClass)
+    print(df)
+    if df.empty:
+        return "empty"
+    else :
+        return np.round(df['Điểm tổng kết'].mean(), 2)
+    
 @app.get('/subject/SoSVTruotMonMoiMonHoc')
 def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     all_Point = data.SubjectAndStudentMethod.get_all_student(db)

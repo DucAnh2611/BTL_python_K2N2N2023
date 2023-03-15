@@ -12,7 +12,9 @@ from database import SessionLocal, engine, get_db
 from sql_app.default import initDef 
 from fastapi.responses import HTMLResponse
 import webbrowser
+# import sqlite3
 import os
+
 
 models.Base.metadata.create_all(bind=engine)
 

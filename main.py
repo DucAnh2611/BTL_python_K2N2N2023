@@ -11,9 +11,11 @@ import sql_app.data as data
 from database import SessionLocal, engine, get_db
 from sql_app.default import initDef 
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 import webbrowser
 import os
 
+templates = Jinja2Templates(directory="pages/")
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -427,6 +429,6 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     df_failed = df_subjects[df_subjects['Trượt'] == 'Trượt'].groupby(['Môn học']).size().reset_index(name='Số lượng')
     
     html_chart = df_failed.to_html()
-    return html_chart
+    return templates.TemplateResponse('chart.html', context={'request': request , 'result': html_chart})
 
 

@@ -368,3 +368,4 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     html_chart = df_failed.to_html()
     return html_chart
 
+

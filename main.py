@@ -107,14 +107,13 @@ def home():
     return HTMLResponse(content=html_content, status_code=200)
 
 #region Manh
-# np
-@app.get('/subject/DiemCuaMon')
-def get_max_point_subject(
+#pd
+@app.get('/subject/DiemCuaMon', tags = ['Điểm của môn của học sinh'])
+def get_point_subject(
     studentid: Union[int, None] = None, 
     subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)
 ):
-    
     if(studentid != None or subjectid !=None):
         studentPoint= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid));
         if np.array(studentPoint).size !=0:
@@ -134,9 +133,51 @@ def get_max_point_subject(
                     "errMsg": "Không tồn tại môn học"})
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
-    
 
-#endregion
+#np
+@app.get('/subject/Diem')
+def get_Diem(
+    classid: Union[int, None] = None, 
+    subjectid: Union[int, None] = None,
+    db: Session = Depends(get_db)
+):
+    if(classid != None or subject != None):
+        ClassPoint = data.GradePointMethod.get_SubjectPointfromClass(db, schemas.ClassPoint(classid= classid, subjectid= subjectid))
+        df = pd.DataFrame.from_dict(ClassPoint)
+        Lop = df['Lớp'][0]
+        subject = df['Môn học'][0]
+        diem = np.round(df['Điểm tổng kết'].mean(), 1)
+        return f'Điểm trung bình môn {subject} của lớp {Lop} là {diem}'
+    else: 
+        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
+
+#endregion    
+@app.get('/student/HocLucHocSinh', tags= ['Học lực của học sinh'])
+def get_HocLuc(
+    studentid : Union[int, None] = None,
+    db: Session = Depends(get_db)
+):
+    if( studentid != None):
+        studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid)
+        df = pd.DataFrame.from_dict(studentInClass)
+        diem = df['Điểm tổng kết']
+        name = df['Họ và tên'][0]
+        diemTrungBinh = np.round(diem.sum()/ len(df['Điểm tổng kết'].to_list()), 1)
+        if diemTrungBinh >=8:
+            return {'result': f'{name} đã là học sinh giỏi với {diemTrungBinh} điểm tổng kết'}            
+        elif diemTrungBinh >=6.5:
+            return {'result': f'{name} đã là học sinh khá với {diemTrungBinh} điểm tổng kết'}
+        elif diemTrungBinh >= 5:
+            return {'result': f'{name} đã là học sinh trung bình với {diemTrungBinh} điểm tổng kết'}
+        elif diemTrungBinh >= 4: 
+            return {'result': f'{name} là học sinh yếu với {diemTrungBinh} điểm tổng kết'}
+        else:
+            return {'result': f'{name} đã bị trượt với {diemTrungBinh} điểm tổng kết'}
+    else: 
+        raise HTTPException(status_code=404, detail={
+            "field": "studentid",
+            "errMsg": "Chưa có thông tin"
+        })
 
 #region DucAnh
 #pd:
@@ -146,7 +187,7 @@ def get_class_point_subject(
     db: Session = Depends(get_db)
 ):
     if( studentid != None):
-        studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid);
+        studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid)
         df = pd.DataFrame.from_dict(studentInClass)
         df['Điểm tổng kết'] = df['Điểm tổng kết'].fillna(0)
         diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
@@ -215,9 +256,6 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
             
     return result
 
-#endregion
-
-#region Dung
 #endregion
 
 #region Hieu

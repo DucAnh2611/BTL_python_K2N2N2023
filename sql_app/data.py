@@ -99,11 +99,7 @@ class SubjectAndStudentMethod:
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
                         models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).filter(models.Student.id == studentid).all()
-    
-    def get_all_student_all(db: Session):
-        return db.query(models.Student.name.label('Họ và tên'),
-                        models.Subject.name.label('Môn học'),
-                        models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).all()      
+        
 
 class ClassAndStudentAndPointMethod:
     def get_all_point(db: Session, classSubject: schemas.ClassAndSubject):
@@ -136,3 +132,17 @@ class StudentWithIncreasingScoresMethod:
 class StudentWithSpecificFirstName:
     def get_list(firstname: Union[str, None], db: Session):
         return db.query(models.Student.name.label('Họ và tên')).filter(models.Student.name.like(firstname + "%")).all()
+    
+class GradePointMethod:
+    def get_SubjectPointfromClass( db: Session, classSubject: schemas.ClassPoint):
+        return db.query(
+            models.Subject.name.label('Môn học'),
+            models.Classroom.name.label('Lớp'),
+            models.SubjectStudent.finnalSum.label('Điểm tổng kết')
+            ).select_from(models.Student).join(models.Classroom).join(models.SubjectStudent).join(models.Subject).filter(
+                and_(
+                    models.Student.classId == classSubject.classid,
+                    models.SubjectStudent.subjectId == classSubject.subjectid   
+                )
+            ).all()
+    

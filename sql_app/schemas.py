@@ -64,4 +64,9 @@ class SubjectAvgPoint(SubjectStudentPointBase):
 class ClassAndSubject(BaseModel):
     grade: int 
     subjectid: int
+
+class ClassPoint(BaseModel):
+    classid: int
+    subjectid: int
+
     

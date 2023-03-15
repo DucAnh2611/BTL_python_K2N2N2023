@@ -69,4 +69,12 @@ class ClassPoint(BaseModel):
     classid: int
     subjectid: int
 
+class StudentFind(BaseModel):
+    studentid: Union[int, None] = None
+    studentName: Union[str, None] = None
+    studentFinal: Union[float, None] = None
+    studentFifFirst:Union[float, None] = None
+    studentFifSec: Union[float, None] = None
+    studentFirstLast: Union[float, None] = None
+    studentSecLast: Union[float, None] = None
     

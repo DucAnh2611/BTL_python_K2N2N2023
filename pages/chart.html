@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table</title>
+    <style>
+        table, table>tbody{
+            display: flex;
+            flex-direction: column;
+        }
+        tbody{
+            border-top: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    {{result}}
+    <script>
+        var doc = new DOMParser().parseFromString(document.body.innerText, "text/xml").firstElementChild
+        document.body.firstChild.remove()
+        document.body.appendChild(doc)
+    </script>
+</body>
+</html>

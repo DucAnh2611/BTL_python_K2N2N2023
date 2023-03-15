@@ -8,14 +8,12 @@ import matplotlib.pyplot as plt
 import sql_app.models as models
 import sql_app.schemas as schemas
 import sql_app.data as data
-from fastapi.templating import Jinja2Templates
 from database import SessionLocal, engine, get_db
 from sql_app.default import initDef 
 from fastapi.responses import HTMLResponse
 import webbrowser
 import os
 
-templates = Jinja2Templates(directory="pages/")
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -110,9 +108,7 @@ def home():
 
 #region Manh
 #pd
-@app.get('/subject/DiemCuaMon', 
-         tags = ['Điểm của học sinh theo môn'], 
-         description= ('Nhập mã học sinh và mã môn để xem được điểm tổng môn đó theo mã học sinh'))
+@app.get('/subject/DiemCuaMon', tags = ['Điểm của môn của học sinh'])
 def get_point_subject(
     studentid: Union[int, None] = None, 
     subjectid: Union[int, None] = None,
@@ -138,35 +134,8 @@ def get_point_subject(
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
-@app.get('/subject/DiemTongKetCuaHocSinh', 
-         tags=['Điểm tổng kết của học sinh'],
-         description=('Nhập mã học sinh để có thể xem bảng điểm của học sinh đó'))
-def get_student_point_subject(
-    studentid: Union[int, None] = None,
-    db: Session = Depends(get_db)
-):
-    if( studentid != None):
-        studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid)
-        df = pd.DataFrame.from_dict(studentInClass)
-        df['Điểm tổng kết'] = df['Điểm tổng kết'].fillna(0)
-        diem = df['Điểm tổng kết'].tolist()
-        subject = df['Môn học'].to_list()
-        name = df['Họ và tên'][0]
-        subject.insert(0, 'Họ và tên')
-        diem.insert(0, name)
-        dataframe = pd.DataFrame(data = diem, index= subject)
-        print(dataframe.T)
-        return dataframe
-    else: 
-        raise HTTPException(status_code=404, detail={
-            "field": "studentid",
-            "errMsg": "Chưa có thông tin"
-        })
-
 #np
-@app.get('/subject/Diem', 
-         tags= ['Điểm trung bình môn theo lớp'], 
-         description= ('Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp'))
+@app.get('/subject/Diem')
 def get_Diem(
     classid: Union[int, None] = None, 
     subjectid: Union[int, None] = None,
@@ -182,14 +151,6 @@ def get_Diem(
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
-@app.post('/student/ThemHocSinh', tags= ['Thêm học sinh'])
-def post_student(student : schemas.Student, db : Session = Depends(get_db)):
-    hocSinhMoi = models.Student(
-                    id = student.id,
-                    name = student.studentName,
-                    classId = student.classIn
-                    )
-    return hocSinhMoi
 #endregion    
 @app.get('/student/HocLucHocSinh', tags= ['Học lực của học sinh'])
 def get_HocLuc(
@@ -211,7 +172,7 @@ def get_HocLuc(
         elif diemTrungBinh >= 4: 
             return {'result': f'{name} là học sinh yếu với {diemTrungBinh} điểm tổng kết'}
         else:
-            return {'result': f'{name} đã bị đúp với {diemTrungBinh} điểm tổng kết'}
+            return {'result': f'{name} đã bị trượt với {diemTrungBinh} điểm tổng kết'}
     else: 
         raise HTTPException(status_code=404, detail={
             "field": "studentid",
@@ -220,89 +181,28 @@ def get_HocLuc(
 
 #region DucAnh
 #pd:
-@app.get('/statistic/subject/{subjectid}')
-def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
-    if(subjectid > 0) :
-        getSubject = data.SubjectMethod.get_all(db)
-        if subjectid > len(getSubject):
-            return {
-                "msg": "Không tồn tại môn học"
-            }
-        else:
-            listStudentSubject = data.SubjectStudentPointMethod.get_point_subjectid(db, subjectid)
-            if len(listStudentSubject) != 0:
-                df = pd.DataFrame.from_dict(listStudentSubject)
-                classList = df.groupby(df['Lớp']).mean(numeric_only = True).applymap(lambda x: np.round(x, 2))
-                subjectName = df['Môn học'][0]
-                return {
-                    "msg": f"Thống kê điểm tổng kết theo lớp môn {subjectName}",
-                    "data" : classList.T
-                }
-            else:
-                return {
-                    "msg": "Không tồn tại bản ghi nào"
-                }
-    else:
-        raise HTTPException(status_code=404, detail={
-                "field" : "subjectid",
-                "errMsg" : "Giá trị subjectid không thể nỏ hơn hoặc bằng 0"
-            })
-
-@app.post('/class/TimKiemHocSinh')
-def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(get_db)):
-    result = ""
-    errorList = []
-    line = 0
-    for dict in studentInfor:
-        if(line >= 2):
-            if dict[1] < 0:    
-                errorList.append({"field": dict[0], "errMsg" : "Điểm nhỏ hơn 0"})
-            elif dict[1] >10:
-                errorList.append({"field": dict[0], "errMsg" : "Điểm lớn hơn 10"})
-        else:
-            if line!=1:
-                if dict[1] <= 0:    
-                    errorList.append({"field": dict[0], "errMsg" : "id Không được nhỏ hơn hoặc bằng 0"})
-        line +=1
-    if len(errorList) > 0:
-        result = errorList
-    else:
-        list_avai = data.ClassAndStudentAndPointMethod.find_student_point(db, studentInfor)
-        if(len(list_avai) !=0): 
-            df = pd.DataFrame.from_dict(list_avai)
-            result = df.T
-        else:
-            result = {
-                "msg": "không có kết quả phù hợp"
-            }
-    return result
-
-#np:
-@app.get('/subject/DiemTongKetTrungBinhHocSinh')
-def get_avg_point_subject(
+@app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Điểm tổng kết trung bình'])
+def get_class_point_subject(
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
 ):
     if( studentid != None):
-        if(studentid >0):
-            studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid);
-            df = pd.DataFrame.from_dict(studentInClass)
-            
-            diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
-            name = df['Họ và tên'][0]
-            return {
-                "msg": f'Điểm trung bình của {name} là: {diemTrungBinh}',
-                "data": diemTrungBinh}
-        else:
-            raise HTTPException(status_code=404, detail={
-                "field": "studentid",
-                "errMsg": "Phải lớn hơn 0"
-            })
+        studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid)
+        df = pd.DataFrame.from_dict(studentInClass)
+        df['Điểm tổng kết'] = df['Điểm tổng kết'].fillna(0)
+        diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
+        name = df['Họ và tên'][0]
+        return f'Điểm trung bình của {name} là: {diemTrungBinh}'
     else: 
         raise HTTPException(status_code=404, detail={
             "field": "studentid",
             "errMsg": "Chưa có thông tin"
         })
+
+#np:
+@app.get('/statistic/subject/{subjectId}')
+def get_table_point_subject(subjectId : int):
+    return {"subjectId": subjectId}
 
 
 @app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Cập nhật điểm trung bình'])
@@ -362,8 +262,8 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 #region pandas câu 1
 
-@app.get('/student_score/whoHasIncreasedTheirScores', tags=['Danh sách học sinh có điểm tăng dần theo từng bài kiểm tra'])
-def get_highest_forward(
+@app.get('/student_score/whoHasIncreasedTheirScores')
+def get_highestForward(
     db: Session = Depends(get_db)
 ):
     studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
@@ -378,12 +278,12 @@ def get_highest_forward(
 
 #region pandas câu 2 có ý tưởng thì đổi sau
 
-@app.post('/student/classesScoresBySubject', tags=['Thống kê điểm trung bình của từng lớp theo môn học'])
-def post_class_scores_by_subject(
-    gradeSubject: schemas.ClassAndSubject,
+@app.post('/student/studentWithFirstName')
+def post_addNewStudent(
+    firstName: Union[str, None],
     db: Session = Depends(get_db)
 ):
-    studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
+    studentList = data.StudentWithSpecificFirstName.get_list(firstName, db)
     table = pd.DataFrame.from_dict(studentList).to_html()
     text_file = open("student_list_2.html", "w")
     text_file.write(table)
@@ -477,7 +377,7 @@ def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(ge
         return df.T
 
 
-@app.get('/subject/SoSVTruotMonMoiMonHoc', tags= ['Số học sinh trượt mỗi môn'])
+@app.get('/subject/SoSVTruotMonMoiMonHoc')
 def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     all_Point = data.SubjectAndStudentMethod.get_all_student_all(db)
     df = pd.DataFrame.from_dict(all_Point)

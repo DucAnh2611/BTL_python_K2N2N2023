@@ -451,7 +451,7 @@ def post_class_scores_by_subject(
 
 
 
-# Dũng
+# region Dũng
 # np
 @app.get('/subject/SinhVienTruotMon')
 def get_point_less_than_4 (
@@ -462,6 +462,7 @@ def get_point_less_than_4 (
         studentFailed = data.SubjectAndStudentMethod.get_all_student(db, studentid)
         if np.array(studentFailed).size != 0:
             df = pd.DataFrame.from_dict(studentFailed)
+            print(df)
             diem = df['Điểm tổng kết'][0]
             name = df['Họ và tên'][0]
             subject = df['Môn học'][0]
@@ -479,12 +480,25 @@ def get_point_less_than_4 (
             "Chưa có thông tin (studentid: int, subjectid: int)"
         )
 
-# @app.post('/subject/GuiMaLopLaySoHS')
-# def Send_Id_Get_NumStu(
-#     studentid: Union[int, None] = None,
-#     db: Session = Depends(get_db)
-# ):
-    
+@app.post('/subject/GetClassSize')
+def Send_Id_Get_NumStu(
+    classID: Union[int, None] = None,
+    db: Session = Depends(get_db)
+):
+    if (classID):
+        classSz = data.GetStudentInClass.getStuIn4(classID = classID, db = db)
+        num_students = np.sum(classSz)
+        return num_students
+    else:
+        raise HTTPException(status_code=404, detail=
+            "Mã lớp không tồn tại hoặc không hợp lệ !"
+        )
+
+
+def Send_Id_Get_NumStu(classID: int, db: Session = Depends(get_db)):
+    students = data.GetStudentInClass.getStu(classID=classID, db=db)
+    num_students = len(students)
+    return num_students
 
 
 
@@ -494,16 +508,25 @@ def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(ge
     resClass = data.ClassAndStudentAndPointMethod.get_all_point(db, classAndPoint)
     df = pd.DataFrame.from_dict(resClass)
     print(df)
-    if df.empty:
-        return "empty"
+    if (classAndPoint.grade < 10 or classAndPoint.grade > 12):
+        return "Dữ liệu chỉ có trong các khối lớp cấp 3!"
+    elif (classAndPoint.subjectid < 0 or classAndPoint.subjectid > 10):
+        return "Chỉ có dữ liệu môn học từ 1-10"
     else:
-        return df.T
-    
+        # grCol = (df['Khối'] == classAndPoint.grade).groupby(df['Khối'] == classAndPoint.subjectid)
+        # max_Point = df.idxmax(df['Điểm tổng kết'])
 
-@app.get('/subject/SoSVTruotMonMoiMonHoc', tags= ['Số học sinh trượt mỗi môn'])
+        # # Lấy in4 học sinh max
+        # infStuMax = df.loc[max_Point_wGrade][['Môn', 'Khối', 'Họ và tên', 'Điểm tổng kết']]
+        # return df.loc[infStuMax][['Môn', 'Khối', 'Họ và tên', 'Điểm tổng kết']]
+        return df.T
+
+
+@app.get('/subject/SoSVTruotMonMoiMonHoc')
 def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     all_Point = data.SubjectAndStudentMethod.get_all_student_all(db)
     df = pd.DataFrame.from_dict(all_Point)
+    print(df)
     df['Trượt'] = np.where(df['Điểm tổng kết'] < 4, 'Trượt', 'Không trượt')
     df_subjects = df[['Môn học', 'Trượt']]
 
@@ -513,4 +536,4 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     html_chart = df_failed.to_html()
     return html_chart
 
-
+# endregion

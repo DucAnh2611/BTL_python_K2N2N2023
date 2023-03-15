@@ -99,7 +99,11 @@ class SubjectAndStudentMethod:
         return db.query(models.Student.name.label('Họ và tên'),
                         models.Subject.name.label('Môn học'),
                         models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).filter(models.Student.id == studentid).all()
-        
+    
+    def get_all_student_all(db: Session):
+        return db.query(models.Student.name.label('Họ và tên'),
+                        models.Subject.name.label('Môn học'),
+                        models.SubjectStudent.finnalSum.label('Điểm tổng kết')).join(models.Student).join(models.Subject).all()      
 
 class ClassAndStudentAndPointMethod:
     def get_all_point(db: Session, classSubject: schemas.ClassAndSubject):

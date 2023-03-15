@@ -163,7 +163,6 @@ def get_student_point_subject(
 
 
 #np
-@app.get('/subject/Diem')
 @app.get('/subject/Diem', 
          tags= ['Điểm trung bình môn theo lớp'], 
          description= ('Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp'))
@@ -219,7 +218,6 @@ def get_HocLuc(
         elif diemTrungBinh >= 4: 
             return {'result': f'{name} là học sinh yếu với {diemTrungBinh} điểm tổng kết'}
         else:
-            return {'result': f'{name} đã bị trượt với {diemTrungBinh} điểm tổng kết'}
             return {'result': f'{name} đã bị đúp với {diemTrungBinh} điểm tổng kết'}
     else: 
         raise HTTPException(status_code=404, detail={

@@ -172,16 +172,32 @@ class StudentWithIncreasingScoresMethod:
 
 class ClassAndSubjectMethod:
     def get_list(gradeSubject: schemas.ClassAndSubject, db: Session):
+        if gradeSubject.grade in (10, 11, 12):
+            return db.query(models.Classroom.name.label('Tên lớp'),
+                            func.avg(models.SubjectStudent.finnalSum).label('Điểm trung bình'),
+                            models.Subject.name.label('Môn học')
+                        ).filter(models.Classroom.id == models.Student.classId
+                        ).filter(models.Student.id == models.SubjectStudent.studentId
+                        ).filter(and_(
+                                    models.SubjectStudent.subjectId == models.Subject.id,
+                                    models.Classroom.grade == gradeSubject.grade,
+                                    models.Subject.id == gradeSubject.subjectid
+                                )).group_by(models.Classroom.name).all()
         return db.query(models.Classroom.name.label('Tên lớp'),
-                        func.avg(models.SubjectStudent.finnalSum).label('Điểm trung bình'),
-                        models.Subject.name.label('Môn học')
-                    ).filter(models.Classroom.id == models.Student.classId
-                    ).filter(models.Student.id == models.SubjectStudent.studentId
-                    ).filter(and_(
-                                models.SubjectStudent.subjectId == models.Subject.id,
-                                models.Classroom.grade == gradeSubject.grade,
-                                models.Subject.id == gradeSubject.subjectid
-                            )).group_by(models.Classroom.name).all()
+                            func.avg(models.SubjectStudent.finnalSum).label('Điểm trung bình'),
+                            models.Subject.name.label('Môn học')
+                        ).filter(models.Classroom.id == models.Student.classId
+                        ).filter(models.Student.id == models.SubjectStudent.studentId
+                        ).filter(and_(
+                                    models.SubjectStudent.subjectId == models.Subject.id,
+                                    models.Subject.id == gradeSubject.subjectid
+                                )).group_by(models.Classroom.name).all()
+    
+class OnlyScoreMethod:
+    def get_list(db: Session):
+        return db.query(models.Student.name.label('Họ và tên'),
+                        func.avg(models.SubjectStudent.finnalSum).label('Điểm tổng kết')
+                        ).filter(models.Student.id == models.SubjectStudent.studentId).group_by(models.Student.id).order_by(func.avg(models.SubjectStudent.finnalSum).desc()).all()
     
 class GradePointMethod:
     def get_SubjectPointfromClass( db: Session, classSubject: schemas.ClassPoint):

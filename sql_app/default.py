@@ -54,7 +54,7 @@ def initDef():
         ["Thể dục"]
     ]
     c.executemany('''INSERT INTO "subject"("name") VALUES (?)''', listSubject)
-    tiLeDiem = 0.95
+    tiLeDiem = 0.8886
     minimumRandom = np.round(np.random.random(),2)
     for student in range(0, studentSum):
         subjectLen = c.execute('''SELECT * FROM "subject" ''')

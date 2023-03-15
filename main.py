@@ -190,7 +190,7 @@ def post_student(student : schemas.Student, db : Session = Depends(get_db)):
                     classId = student.classIn
                     )
     return hocSinhMoi
-#endregion    
+
 @app.get('/student/HocLucHocSinh', tags= ['Học lực của học sinh'])
 def get_HocLuc(
     studentid : Union[int, None] = None,
@@ -217,6 +217,8 @@ def get_HocLuc(
             "field": "studentid",
             "errMsg": "Chưa có thông tin"
         })
+
+#endregion    
 
 #region DucAnh
 #pd:
@@ -360,35 +362,78 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 #region Hieu
 
-#region pandas câu 1
+#region numpy câu 1 sau này có vẽ biểu đồ
 
-@app.get('/student_score/whoHasIncreasedTheirScores', tags=['Danh sách học sinh có điểm tăng dần theo từng bài kiểm tra'])
-def get_highest_forward(
+@app.get('/numpy/rankingProportion',
+         tags = ['Hiện bảng xếp hạng điểm tổng kết và học lực tương ứng'],
+         description=['Gọi là chạy'])
+
+def get_ranking_proportion(
     db: Session = Depends(get_db)
 ):
-    studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
-    table = pd.DataFrame.from_dict(studentList).to_html()
+    scoreboard = data.OnlyScoreMethod.get_list(db)
+    df = pd.DataFrame.from_dict(scoreboard)
+    df['Học lực'] = get_rank(df['Điểm tổng kết'])
+    table = pd.DataFrame.from_dict(df).to_html()
     text_file = open("student_list_1.html", "w")
     text_file.write(table)
     text_file.close()
     webbrowser.open(os.getcwd() + '/student_list_1.html')
     return f'Kết quả được hiển thị ở cửa sổ mới...'
 
+@np.vectorize
+def get_rank(score):
+    if score > 8.5: 
+        return 'Giỏi'
+    elif score > 6.5:
+        return 'Khá'
+    elif score > 5:
+        return 'Trung bình'
+    else:
+        return 'Kém'
+    
+
 #endregion
 
-#region pandas câu 2 có ý tưởng thì đổi sau
+#region numpy câu 2
 
-@app.post('/student/classesScoresBySubject', tags=['Thống kê điểm trung bình của từng lớp theo môn học'])
+# mai tớ làm nốt - Hiếu
+
+#endregion
+
+#region pandas câu 1
+
+@app.get('/pandas/whoHasIncreasedTheirScores', 
+         tags=['Danh sách học sinh tiến bộ'],
+         description=('Hiển thị những học sinh có điểm các bài kiểm tra tăng dần (Lưu ý: Điểm tổng kết ko nằm trong nhóm điểm được xét)'))
+def get_highest_forward(
+    db: Session = Depends(get_db)
+):
+    studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
+    table = pd.DataFrame.from_dict(studentList).to_html()
+    text_file = open("student_list_2.html", "w")
+    text_file.write(table)
+    text_file.close()
+    webbrowser.open(os.getcwd() + '/student_list_2.html')
+    return f'Kết quả được hiển thị ở cửa sổ mới...'
+
+#endregion
+
+#region pandas câu 2
+
+@app.post('/pandas/classesScoresBySubject', 
+          tags=['Thống kê điểm trung bình của từng lớp theo môn học'],
+          description=('Nhập khối và mã môn học để xem thống kê'))
 def post_class_scores_by_subject(
     gradeSubject: schemas.ClassAndSubject,
     db: Session = Depends(get_db)
 ):
     studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
     table = pd.DataFrame.from_dict(studentList).to_html()
-    text_file = open("student_list_2.html", "w")
+    text_file = open("student_list_3.html", "w")
     text_file.write(table)
     text_file.close()
-    webbrowser.open(os.getcwd() + '/student_list_2.html')
+    webbrowser.open(os.getcwd() + '/student_list_3.html')
     return f'Kết quả được hiển thị ở cửa sổ mới...'
     
 #endregion

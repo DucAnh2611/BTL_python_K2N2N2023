@@ -64,6 +64,8 @@ class SubjectAvgPoint(SubjectStudentPointBase):
 class ClassAndSubject(BaseModel):
     grade: int 
     subjectid: int
+    class Config:
+        orm_mode = True
 
 class ClassPoint(BaseModel):
     classid: int

@@ -163,7 +163,10 @@ def get_student_point_subject(
             "errMsg": "Chưa có thông tin"
         })
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 #np
 @app.get('/subject/Diem', 
          tags= ['Điểm trung bình môn theo lớp'], 

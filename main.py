@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, FastAPI, HTTPException, Path, File, Upload
 from starlette.responses import FileResponse 
 from sqlalchemy.orm import Session
 from typing import Union
+import appDes as appDes
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -31,12 +32,14 @@ Bài tập lớn môn **Lập trình python**
 
 app = FastAPI(
     title="Quản lý điểm học sinh",
-    description=description,
+    description=appDes.description,
     version="1.0.0",
     contact={
         "name": "Github Nhóm",
         "url": "https://github.com/DucAnh2611/BTL_python_K2N2N2023",
-    })
+    },
+    openapi_tags=appDes.tags_metadata
+)
 # initDef()
 
 @app.get('/', response_class=HTMLResponse, tags=['Trang chủ'])
@@ -245,7 +248,7 @@ def get_HocLuc(
 
 #region DucAnh
 #pd:
-@app.get('/statistic/subject/{subjectid}')
+@app.get('/statistic/subject/{subjectid}', tags=['Duc anh pd'])
 def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
     if(subjectid > 0) :
         getSubject = data.SubjectMethod.get_all(db)
@@ -273,7 +276,7 @@ def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
                 "errMsg" : "Giá trị subjectid không thể nhỏ hơn hoặc bằng 0"
             })
 
-@app.post('/class/TimKiemHocSinh')
+@app.post('/class/TimKiemHocSinh', tags=['Duc anh pd'])
 def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(get_db)):
     result = ""
     errorList = []
@@ -303,7 +306,7 @@ def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(g
     return result
 
 #np:
-@app.get('/subject/DiemTongKetTrungBinhHocSinh')
+@app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Duc anh np'])
 def get_avg_point_subject(
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -330,7 +333,7 @@ def get_avg_point_subject(
         })
 
 
-@app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Cập nhật điểm trung bình'])
+@app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Duc anh np'])
 def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get_db)):
     result = ""
     errorList = []

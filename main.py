@@ -182,14 +182,19 @@ def get_Diem(
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
-@app.post('/student/ThemHocSinh', tags= ['Thêm học sinh'])
-def post_student(student : schemas.Student, db : Session = Depends(get_db)):
-    hocSinhMoi = models.Student(
-                    id = student.id,
-                    name = student.studentName,
-                    classId = student.classIn
-                    )
-    return hocSinhMoi
+@app.post('/student/CapNhatTenLop', 
+          tags=['Cập nhật tên lớp'],
+          description=('Cho phép người dùng đổi tên lớp kheo khối và id'))
+def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
+    result = " "
+    updateData = data.ClassroomMethod.update_class(db, schemas.Classroom(
+        className= classroom.className,
+        classGrade= classroom.classGrade,
+        classid= classroom.classid
+        ))
+    result = data.ClassroomMethod.get_class(db, classroom.classid)
+    
+    return result
 
 @app.get('/student/HocLucHocSinh', tags= ['Học lực của học sinh'])
 def get_HocLuc(

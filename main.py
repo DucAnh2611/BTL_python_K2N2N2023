@@ -35,7 +35,7 @@ app = FastAPI(
     description=appDes.description,
     version="1.0.0",
     contact={
-        "name": "Github Nhóm",
+        "name": "Source Code",
         "url": "https://github.com/DucAnh2611/BTL_python_K2N2N2023",
     },
     openapi_tags=appDes.tags_metadata
@@ -133,7 +133,7 @@ def home():
 #pd
 
 @app.get('/subject/DiemTongKetCuaHocSinh', 
-         tags=['Mạnh pd'],
+         tags=['Mạnh Pandas'],
          description=('Nhập mã học sinh để có thể xem bảng điểm của học sinh đó'))
 def get_student_point_subject(
     studentid: Union[int, None] = None,
@@ -165,7 +165,7 @@ def get_student_point_subject(
         })
 
 @app.post('/student/CapNhatTenLop', 
-          tags=['Mạnh pd'],
+          tags=['Mạnh Pandas'],
           description=('Cho phép người dùng đổi tên lớp, đổi khối theo id'))
 def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
     result = " "
@@ -185,7 +185,7 @@ def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
     return result
 
 @app.get('/subject/DiemCuaMon', 
-         tags = ['Mạnh pd'], 
+         tags = ['Mạnh Pandas'], 
          description= ('Nhập mã học sinh và mã môn để xem được điểm tổng môn đó theo mã học sinh'))
 def get_point_subject(
     studentid: Union[int, None] = None, 
@@ -214,7 +214,7 @@ def get_point_subject(
 
 #np
 @app.get('/subject/Diem', 
-         tags= ['Mạnh np'], 
+         tags= ['Mạnh Numpy'], 
          description= ('Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp'))
 def get_Diem(
     classid: Union[int, None] = None, 
@@ -232,7 +232,7 @@ def get_Diem(
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
-@app.post('/student/Avg2Subject', tags= ['Mạnh np'],
+@app.post('/student/Avg2Subject', tags= ['Mạnh Numpy'],
           description= ('Nhập mã học sinh, mã của 2 môn học thì sẽ trả về trung bình 2 môn đó'))
 def Avg_2_subject(
     student: schemas.avg2sub,
@@ -416,9 +416,9 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 #region numpy câu 1
 
-@app.get('/numpy/ranking',
-         tags = ['Hiện bảng xếp hạng điểm tổng kết và học lực tương ứng'],
-         description=(''))
+@app.get('/statistic/ranking',
+         tags = ['Hiếu Numpy'],
+         description=('Hiện bảng xếp hạng điểm tổng kết và học lực tương ứng'))
 
 def get_ranking(
     db: Session = Depends(get_db)
@@ -446,9 +446,9 @@ def get_evaluation(score):
 
 #region numpy câu 2
 
-@app.post('/numpy/calculateIntegration',
-          tags=['Tính tích phân'],
-          description=('Nhập chặn dưới, chặn trên và công thức'))
+@app.post('/default/calculateIntegration',
+          tags=['Hiếu Numpy'],
+          description=('Tính tích phân dựa vào chặn trên, chặn dưới và phương trình đầu vào'))
 def integration_calculation(
     input: schemas.IntegrationInput
 ):
@@ -470,10 +470,10 @@ def integration_calculation(
 
 #region pandas câu 1
 
-@app.get('/pandas/whoHasIncreasedTheirScores', 
-         tags=['Danh sách học sinh tiến bộ'],
-         description=('Hiển thị những học sinh có điểm các bài kiểm tra tăng dần (Lưu ý: Điểm tổng kết ko nằm trong nhóm điểm được xét)'))
-def get_highest_forward(
+@app.get('/statistic/whoHasIncreasedTheirScores', 
+         tags=['Hiếu Pandas'],
+         description=('Hiển thị những học sinh có điểm các bài kiểm tra tăng dần'))
+def who_has_increased_their_scores(
     db: Session = Depends(get_db)
 ):
     studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
@@ -489,10 +489,10 @@ def get_highest_forward(
 
 #region pandas câu 2
 
-@app.post('/pandas/classesScoresBySubject', 
-          tags=['Thống kê điểm trung bình của từng lớp theo môn học'],
-          description=('Nhập khối và mã môn học để xem thống kê'))
-def post_class_scores_by_subject(
+@app.post('/statistic/classesScoresBySubject', 
+          tags=['Hiếu Pandas'],
+          description=('Thống kê điểm trung bình của từng lớp theo môn học'))
+def class_scores_by_subject(
     gradeSubject: schemas.ClassAndSubject,
     db: Session = Depends(get_db)
 ):
@@ -523,7 +523,9 @@ def post_class_scores_by_subject(
 
 #region Dũng
 # np
-@app.get('/subject/SinhVienTruotMon')
+@app.get('/subject/SinhVienTruotMon',
+          tags=['Dũng Numpy'],
+          description=('Hiển thị tình trạng của học sinh (trượt hay qua môn)'))
 def get_point_less_than_4 (
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -550,7 +552,9 @@ def get_point_less_than_4 (
             "Chưa có thông tin (studentid: int, subjectid: int)"
         )
 
-@app.post('/subject/GetClassSize')
+@app.post('/subject/GetClassSize',
+          tags=['Dũng Numpy'],
+          description=('Lấy sĩ số lớp dựa theo mã lớp'))
 def Send_Id_Get_ClassSz(
     classID: schemas.ClassID, 
     db: Session = Depends(get_db)
@@ -576,7 +580,9 @@ def Send_Id_Get_ClassSz(
 
 
 # pd
-@app.post('/statistic/class/grade')
+@app.post('/statistic/class/grade',
+          tags=['Dũng Pandas'],
+          description=('Lấy thông tin học sinh có điểm cao nhất và thấp nhất trong lớp theo môn học'))
 def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(get_db)):
     resClass = data.ClassAndStudentAndPointMethod.get_all_point(db, classAndPoint)
     df = pd.DataFrame.from_dict(resClass)
@@ -604,7 +610,9 @@ def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(ge
         }
 
 
-@app.get('/subject/SoSVTruotMonMoiMonHoc')
+@app.get('/subject/SoSVTruotMonMoiMonHoc',
+          tags=['Dũng Pandas'],
+          description=('Số học sinh trượt môn học'))
 def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     all_Point = data.SubjectAndStudentMethod.get_all_student_all(db)
     df = pd.DataFrame.from_dict(all_Point)
@@ -615,6 +623,6 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     df_failed = df_subjects[df_subjects['Trượt'] == 'Trượt'].groupby(['Môn học']).size().reset_index(name='Số lượng')
     
     html_chart = df_failed.to_html()
-    return html_chart
+    return HTMLResponse(content=html_chart, status_code=200)
 
 # endregion

@@ -167,17 +167,24 @@ def get_student_point_subject(
     db: Session = Depends(get_db)
 ):
     if( studentid != None):
-        studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid)
-        df = pd.DataFrame.from_dict(studentInClass)
-        df['Điểm tổng kết'] = df['Điểm tổng kết'].fillna(0)
-        diem = df['Điểm tổng kết'].tolist()
-        subject = df['Môn học'].to_list()
-        name = df['Họ và tên'][0]
-        subject.insert(0, 'Họ và tên')
-        diem.insert(0, name)
-        dataframe = pd.DataFrame(data = diem, index= subject)
-        print(dataframe.T)
-        return dataframe
+        if studentid > 0:
+            studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid)
+            df = pd.DataFrame.from_dict(studentInClass)
+            df['Điểm tổng kết'] = df['Điểm tổng kết']
+            diem = df['Điểm tổng kết'].tolist()
+            subject = df['Môn học'].to_list()
+            name = df['Họ và tên'][0]
+            subject.insert(0, 'Họ và tên')
+            diem.insert(0, name)
+            dataframe = pd.DataFrame(data = diem, index= subject)
+            print(dataframe.T)
+            return dataframe
+        else:
+            raise HTTPException(status_code=404, detail={
+            "field": "studentid",
+            "errMsg": "Thông tin không hợp lệ"
+        })
+            
     else: 
         raise HTTPException(status_code=404, detail={
             "field": "studentid",
@@ -204,18 +211,25 @@ def get_Diem(
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
 @app.post('/student/CapNhatTenLop', 
-          tags=['Cập nhật tên lớp'],
-          description=('Cho phép người dùng đổi tên lớp kheo khối và id'))
+          tags=['Cập nhật tên lớp, khối'],
+          description=('Cho phép người dùng đổi tên lớp, đổi khối theo id'))
 def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
     result = " "
-    updateData = data.ClassroomMethod.update_class(db, schemas.Classroom(
-        className= classroom.className,
-        classGrade= classroom.classGrade,
-        classid= classroom.classid
-        ))
-    result = data.ClassroomMethod.get_class(db, classroom.classid)
-    
+    if classroom.classid >0 :
+        updateData = data.ClassroomMethod.update_class(db, schemas.Classroom(
+            className= classroom.className,
+            classGrade= classroom.classGrade,
+            classid= classroom.classid
+            ))
+        result = data.ClassroomMethod.get_class(db, classroom.classid)
+    else:
+        result = {
+            "field": "classid",
+            "errMsg": "Thông tin không hợp lệ"
+        }
+
     return result
+
 
 @app.get('/student/HocLucHocSinh', tags= ['Học lực của học sinh'])
 def get_HocLuc(

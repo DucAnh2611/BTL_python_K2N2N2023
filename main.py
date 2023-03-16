@@ -248,7 +248,7 @@ def get_HocLuc(
 
 #region DucAnh
 #pd:
-@app.get('/statistic/subject/{subjectid}', tags=['Duc anh pd'])
+@app.get('/statistic/subject/{subjectid}', tags=['Duc anh pd'], description=appDes.descriptionApi['DucAnhPd']['ThongKeMonHoc'])
 def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
     if(subjectid > 0) :
         getSubject = data.SubjectMethod.get_all(db)

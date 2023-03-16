@@ -500,13 +500,13 @@ def get_point_less_than_4 (
         )
 
 @app.post('/subject/GetClassSize')
-def Send_Id_Get_NumStu(
+def Send_Id_Get_ClassSz(
     classID: Union[int, None] = None,
     db: Session = Depends(get_db)
 ):
-    if (classID):
+    if (classID > 0):
         classSz = data.GetStudentInClass.getStuIn4(classID = classID, db = db)
-        num_students = np.sum(classSz)
+        num_students = classSz.sum()
         return num_students
     else:
         raise HTTPException(status_code=404, detail=

@@ -26,8 +26,7 @@ class ClassroomMethod:
     def update_class(db: Session, classroom: schemas.Classroom):
         db_class_update = db.query(models.Classroom).filter(
             and_(
-                models.Classroom.id == classroom.classid,
-                models.Classroom.grade == classroom.classGrade
+                models.Classroom.id == classroom.classid
             )
         ).update({
             'name': classroom.className,
@@ -36,8 +35,7 @@ class ClassroomMethod:
         db.commit()
         return db.query(models.Classroom).filter(
             and_(
-                models.Classroom.id == classroom.classid,
-                models.Classroom.grade == classroom.classGrade
+                models.Classroom.id == classroom.classid
             )
         ).first()
     
@@ -234,3 +232,9 @@ class GetStudentInClass:
     def getStuIn4(classID: int, db: Session):
         return db.query(models.Student).join(models.Classroom).filter(models.Classroom.id == classID).all()
     
+class ClassInGrade:
+    def getClass(grade: int, db: Session):
+        return db.query(
+            models.Classroom.id.label('Mã lớp'),
+            models.Student.id._label('Mã học sinh')
+            ).select_from(models.Student).join(models.Classroom).filter(models.Classroom.grade == grade).all()

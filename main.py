@@ -131,36 +131,9 @@ def home():
 
 #region Manh
 #pd
-@app.get('/subject/DiemCuaMon', 
-         tags = ['Điểm của học sinh theo môn'], 
-         description= ('Nhập mã học sinh và mã môn để xem được điểm tổng môn đó theo mã học sinh'))
-def get_point_subject(
-    studentid: Union[int, None] = None, 
-    subjectid: Union[int, None] = None,
-    db: Session = Depends(get_db)
-):
-    if(studentid != None or subjectid !=None):
-        studentPoint= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid));
-        if np.array(studentPoint).size !=0:
-            df = pd.DataFrame.from_dict(studentPoint)
-            diem = df['Điểm tổng kết'][0]
-            name = df['Họ và tên'][0]
-            subject = df['Môn học'][0]
-            return {"result": f'Điểm của {name} với môn {subject} là: {diem}'}
-        else:
-            if np.array(data.StudentMethod.get_byid(db, studentid=studentid)).size == 0:
-                raise HTTPException(status_code=404, detail= {
-                    "field": "studentid",
-                    "errMsg": "Không tồn tại sinh viên"})
-            elif np.array(data.SubjectMethod.get_subject_id(db, id= subjectid)).size == 0:
-                raise HTTPException(status_code=404, detail= {
-                    "field": "subjectid",
-                    "errMsg": "Không tồn tại môn học"})
-    else: 
-        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
 @app.get('/subject/DiemTongKetCuaHocSinh', 
-         tags=['Điểm tổng kết của học sinh'],
+         tags=['Mạnh pd'],
          description=('Nhập mã học sinh để có thể xem bảng điểm của học sinh đó'))
 def get_student_point_subject(
     studentid: Union[int, None] = None,
@@ -191,27 +164,8 @@ def get_student_point_subject(
             "errMsg": "Chưa có thông tin"
         })
 
-#np
-@app.get('/subject/Diem', 
-         tags= ['Điểm trung bình môn theo lớp'], 
-         description= ('Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp'))
-def get_Diem(
-    classid: Union[int, None] = None, 
-    subjectid: Union[int, None] = None,
-    db: Session = Depends(get_db)
-):
-    if(classid != None or subjectid != None):
-        ClassPoint = data.GradePointMethod.get_SubjectPointfromClass(db, schemas.ClassPoint(classid= classid, subjectid= subjectid))
-        df = pd.DataFrame.from_dict(ClassPoint)
-        Lop = df['Lớp'][0]
-        subject = df['Môn học'][0]
-        diem = np.round(df['Điểm tổng kết'].mean(), 1)
-        return f'Điểm trung bình môn {subject} của lớp {Lop} là {diem}'
-    else: 
-        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
-
 @app.post('/student/CapNhatTenLop', 
-          tags=['Cập nhật tên lớp, khối'],
+          tags=['Mạnh pd'],
           description=('Cho phép người dùng đổi tên lớp, đổi khối theo id'))
 def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
     result = " "
@@ -230,34 +184,89 @@ def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
 
     return result
 
-
-@app.get('/student/HocLucHocSinh', tags= ['Học lực của học sinh'])
-def get_HocLuc(
-    studentid : Union[int, None] = None,
+@app.get('/subject/DiemCuaMon', 
+         tags = ['Mạnh pd'], 
+         description= ('Nhập mã học sinh và mã môn để xem được điểm tổng môn đó theo mã học sinh'))
+def get_point_subject(
+    studentid: Union[int, None] = None, 
+    subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)
 ):
-    if( studentid != None):
-        studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid)
-        df = pd.DataFrame.from_dict(studentInClass)
-        diem = df['Điểm tổng kết']
-        name = df['Họ và tên'][0]
-        diemTrungBinh = np.round(diem.sum()/ len(df['Điểm tổng kết'].to_list()), 1)
-        if diemTrungBinh >=8:
-            return {'result': f'{name} đã là học sinh giỏi với {diemTrungBinh} điểm tổng kết'}            
-        elif diemTrungBinh >=6.5:
-            return {'result': f'{name} đã là học sinh khá với {diemTrungBinh} điểm tổng kết'}
-        elif diemTrungBinh >= 5:
-            return {'result': f'{name} đã là học sinh trung bình với {diemTrungBinh} điểm tổng kết'}
-        elif diemTrungBinh >= 4: 
-            return {'result': f'{name} là học sinh yếu với {diemTrungBinh} điểm tổng kết'}
+    if(studentid != None or subjectid !=None):
+        studentPoint= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid))
+        if np.array(studentPoint).size !=0:
+            df = pd.DataFrame.from_dict(studentPoint)
+            diem = df['Điểm tổng kết'][0]
+            name = df['Họ và tên'][0]
+            subject = df['Môn học'][0]
+            return {"result": f'Điểm của {name} với môn {subject} là: {diem}'}
         else:
-            return {'result': f'{name} đã bị đúp với {diemTrungBinh} điểm tổng kết'}
+            if np.array(data.StudentMethod.get_byid(db, studentid=studentid)).size == 0:
+                raise HTTPException(status_code=404, detail= {
+                    "field": "studentid",
+                    "errMsg": "Không tồn tại sinh viên"})
+            elif np.array(data.SubjectMethod.get_subject_id(db, id= subjectid)).size == 0:
+                raise HTTPException(status_code=404, detail= {
+                    "field": "subjectid",
+                    "errMsg": "Không tồn tại môn học"})
     else: 
-        raise HTTPException(status_code=404, detail={
+        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
+
+#np
+@app.get('/subject/Diem', 
+         tags= ['Mạnh np'], 
+         description= ('Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp'))
+def get_Diem(
+    classid: Union[int, None] = None, 
+    subjectid: Union[int, None] = None,
+    db: Session = Depends(get_db)
+):
+    if(classid != None or subjectid != None):
+        ClassPoint = data.GradePointMethod.get_SubjectPointfromClass(db, schemas.ClassPoint(classid= classid, subjectid= subjectid))
+        df = pd.DataFrame.from_dict(ClassPoint)
+        Lop = df['Lớp'][0]
+        subject = df['Môn học'][0]
+        diem = np.round(df['Điểm tổng kết'].mean(), 1)
+        return f'Điểm trung bình môn {subject} của lớp {Lop} là {diem}'
+    else: 
+        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
+
+@app.get('/student/Avg2Subject', tags= ['Mạnh np'])
+def get_Avg_2_subject(
+    studentid: Union[int, None] = None, 
+    subjectid1: Union[int, None] = None,
+    subjectid2: Union[int, None] = None,
+    db: Session = Depends(get_db)
+):
+    if studentid != None or subject1 != None or subject2 != None :
+        if studentid > 0 :
+            if subject1 > 0 and subject2 >0:
+                studentPoint1= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid1))
+                studentPoint2= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid2))
+                df1 = pd.DataFrame.from_dict(studentPoint1)
+                df2 = pd.DataFrame.from_dict(studentPoint2)
+                diemMon1 = df1['Điểm tổng kết'][0]
+                diemMon2 = df2['Điểm tổng kết'][0]
+                subject1 = df1['Môn học'][0]
+                subject2 = df2['Môn học'][0]
+                name = df1['Họ và tên'][0]
+                diemTrungBinh = np.round((diemMon1 +diemMon2)/2 ,1)
+            else:
+                raise HTTPException(status_code=404, detail={
+                "field": "subject1, subject2",
+                "errMsg": "Thông tin không hợp lệ"
+                })
+        else: 
+            raise HTTPException(status_code=404, detail={
             "field": "studentid",
+            "errMsg": "Thông tin không hợp lệ"
+            })
+    else:
+        raise HTTPException(status_code=404, detail={
+            "field": "studentid, subject1, subject2",
             "errMsg": "Chưa có thông tin"
         })
-
+    return f'Điểm trung bình hai môn {subject1} và {subject2} của {name} là {diemTrungBinh}'
 #endregion    
 
 #region DucAnh

@@ -87,3 +87,6 @@ class Classroom(BaseModel):
     
 class ClassID(BaseModel):
     classID: int
+
+class Grade(BaseModel):
+    Grade: int

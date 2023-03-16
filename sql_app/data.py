@@ -232,3 +232,9 @@ class GetStudentInClass:
     def getStuIn4(classID: int, db: Session):
         return db.query(models.Student).join(models.Classroom).filter(models.Classroom.id == classID).all()
     
+class ClassInGrade:
+    def getClass(grade: int, db: Session):
+        return db.query(
+            models.Classroom.id.label('Mã lớp'),
+            models.Student.id._label('Mã học sinh')
+            ).select_from(models.Student).join(models.Classroom).filter(models.Classroom.grade == grade).all()

@@ -172,7 +172,7 @@ def get_Diem(
     subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)
 ):
-    if(classid != None or subject != None):
+    if(classid != None or subjectid != None):
         ClassPoint = data.GradePointMethod.get_SubjectPointfromClass(db, schemas.ClassPoint(classid= classid, subjectid= subjectid))
         df = pd.DataFrame.from_dict(ClassPoint)
         Lop = df['Lớp'][0]

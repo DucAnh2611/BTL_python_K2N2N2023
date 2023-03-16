@@ -514,11 +514,6 @@ def Send_Id_Get_NumStu(
         )
 
 
-def Send_Id_Get_NumStu(classID: int, db: Session = Depends(get_db)):
-    students = data.GetStudentInClass.getStu(classID=classID, db=db)
-    num_students = len(students)
-    return num_students
-
 
 
 # pd

@@ -252,7 +252,7 @@ def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail={
                 "field" : "subjectid",
-                "errMsg" : "Giá trị subjectid không thể nỏ hơn hoặc bằng 0"
+                "errMsg" : "Giá trị subjectid không thể nhỏ hơn hoặc bằng 0"
             })
 
 @app.post('/class/TimKiemHocSinh')
@@ -367,11 +367,11 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 #region Hieu
 
-#region numpy câu 1 sau này có vẽ biểu đồ
+#region numpy câu 1
 
 @app.get('/numpy/rankingProportion',
          tags = ['Hiện bảng xếp hạng điểm tổng kết và học lực tương ứng'],
-         description=('Gọi là chạy'))
+         description=(''))
 
 def get_ranking_proportion(
     db: Session = Depends(get_db)
@@ -380,11 +380,8 @@ def get_ranking_proportion(
     df = pd.DataFrame.from_dict(scoreboard)
     df['Học lực'] = get_rank(df['Điểm tổng kết'])
     table = pd.DataFrame.from_dict(df).to_html()
-    text_file = open("student_list_1.html", "w")
-    text_file.write(table)
-    text_file.close()
-    webbrowser.open(os.getcwd() + '/student_list_1.html')
-    return f'Kết quả được hiển thị ở cửa sổ mới...'
+    
+    return HTMLResponse(content=table, status_code=200)
 
 @np.vectorize
 def get_rank(score):
@@ -415,12 +412,13 @@ def get_highest_forward(
     db: Session = Depends(get_db)
 ):
     studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
-    table = pd.DataFrame.from_dict(studentList).to_html()
-    text_file = open("student_list_2.html", "w")
-    text_file.write(table)
-    text_file.close()
-    webbrowser.open(os.getcwd() + '/student_list_2.html')
-    return f'Kết quả được hiển thị ở cửa sổ mới...'
+    if len(studentList) != 0:
+        table = pd.DataFrame.from_dict(studentList).to_html()
+        return HTMLResponse(content=table, status_code=200)
+    else:
+        return {
+            "msg": "Không tồn tại bản ghi nào!"
+        }
 
 #endregion
 
@@ -433,28 +431,30 @@ def post_class_scores_by_subject(
     gradeSubject: schemas.ClassAndSubject,
     db: Session = Depends(get_db)
 ):
-    studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
-    table = pd.DataFrame.from_dict(studentList).to_html()
-    text_file = open("student_list_3.html", "w")
-    text_file.write(table)
-    text_file.close()
-    webbrowser.open(os.getcwd() + '/student_list_3.html')
-    return f'Kết quả được hiển thị ở cửa sổ mới...'
-    
-#endregion
+    if(gradeSubject.subjectid > 0):
+        getSubject = data.SubjectMethod.get_all(db)
+        if gradeSubject.subjectid > len(getSubject):
+            return {
+                "msg": "Không tồn tại môn học"
+            }
+        else:
+            studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
+            if len(studentList) != 0:
+                table = pd.DataFrame.from_dict(studentList).to_html()
+                return HTMLResponse(content=table, status_code=200)
+            else:
+                return {
+                    "msg": "Không tồn tại bản ghi nào!"
+                }
+    else:
+        raise HTTPException(status_code=404, detail={
+                "field" : "subjectid",
+                "errMsg" : "Giá trị subjectid không thể nhỏ hơn hoặc bằng 0"
+            })
 
 #endregion
 
-# @app.post('/class', response_model = schemas.ClassBase)
-# def create_class(classroom: schemas.ClassBase, db: Session = Depends(get_db)):
-#     return data.ClassroomMethod.create_class(db, classroom)
-
-# @app.post('/subject', response_model = schemas.SubjectBase)
-# def create_subject(subject: schemas.SubjectBase, db: Session = Depends(get_db)):
-#     return data.SubjectMethod.create_subject(db, subject)
-
-
-
+#endregion
 
 # region Dũng
 # np

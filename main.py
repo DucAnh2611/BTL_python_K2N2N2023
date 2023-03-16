@@ -18,7 +18,25 @@ import os
 templates = Jinja2Templates(directory="pages/")
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+description = """
+Bài tập lớn môn **Lập trình python**
+
+## Thành viên nhóm
+
+* **A38253 Nguyễn Hoàng Đức Anh**
+* **A38520 Mai Văn Mạnh**
+* **A38911 Vũ Tiến Dũng**
+* **A41174 Hoàng Chí Hiếu** (_Trưởng nhóm_).
+"""
+
+app = FastAPI(
+    title="Quản lý điểm học sinh",
+    description=description,
+    version="1.0.0",
+    contact={
+        "name": "Github Nhóm",
+        "url": "https://github.com/DucAnh2611/BTL_python_K2N2N2023",
+    })
 # initDef()
 
 @app.get('/', response_class=HTMLResponse, tags=['Trang chủ'])

@@ -87,3 +87,8 @@ class Classroom(BaseModel):
     
 class ClassID(BaseModel):
     classID: int
+
+class IntegrationInput(BaseModel):
+    lower_bound: float
+    upper_bound: float
+    equation: str

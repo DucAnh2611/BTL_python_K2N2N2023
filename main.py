@@ -369,22 +369,22 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 #region numpy câu 1
 
-@app.get('/numpy/rankingProportion',
+@app.get('/numpy/ranking',
          tags = ['Hiện bảng xếp hạng điểm tổng kết và học lực tương ứng'],
          description=(''))
 
-def get_ranking_proportion(
+def get_ranking(
     db: Session = Depends(get_db)
 ):
     scoreboard = data.OnlyScoreMethod.get_list(db)
     df = pd.DataFrame.from_dict(scoreboard)
-    df['Học lực'] = get_rank(df['Điểm tổng kết'])
+    df['Học lực'] = get_evaluation(df['Điểm tổng kết'])
     table = pd.DataFrame.from_dict(df).to_html()
     
     return HTMLResponse(content=table, status_code=200)
 
 @np.vectorize
-def get_rank(score):
+def get_evaluation(score):
     if score > 8.5: 
         return 'Giỏi'
     elif score > 6.5:
@@ -399,21 +399,25 @@ def get_rank(score):
 
 #region numpy câu 2
 
-@app.post('/numpy/updateStudentScores',
-          tags=['Cập nhật điểm theo môn học'],
-          description=('Nhập tên môn học, sau đó đưa file điểm lên để hệ thống cập nhật'))
-async def update_student_score(
-    file: UploadFile = File(...,description="Upload a file"),
-    db: Session = Depends(get_db)
+@app.post('/numpy/calculateIntegration',
+          tags=['Tính tích phân'],
+          description=('Nhập chặn dưới, chặn trên và công thức'))
+def integration_calculation(
+    input: schemas.IntegrationInput
 ):
-    if not file:
-        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST)
-    if file.content_type not in  ['text/csv']:
-        raise HTTPException(status_code = status.HTTP_406_NOT_ACCEPTABLE,detail='file type not allow')
-    df = pd.read_csv(file.file,sep='\t')
-    print(df)
-    return {"file name":file.filename, 
-    "file type": file.content_type}
+    funcs = ['ln', 'log', 'sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan', 'sec', 'sinh', 'arsinh', 'power']
+    result = input.equation
+    for func in funcs:
+        result = result.replace(func, f'np.{func}')
+    x = np.linspace(input.lower_bound, input.upper_bound, 1000000)
+    try:
+        return f'Kết quả: {np.trapz(eval(result), x)}'
+    except:
+        raise HTTPException(status_code=500, detail={
+            "field": "equation",
+            "errMsg": "phương trình không hợp lệ! Vui lòng kiểm tra lại"
+        })
+
 
 #endregion
 

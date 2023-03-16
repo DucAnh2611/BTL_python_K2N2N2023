@@ -180,8 +180,8 @@ class StudentWithIncreasingScoresMethod:
                         models.Subject.name.label('Môn học'),
                         models.SubjectStudent.pointFifFirst.label('Điểm 15p lần 1'),
                         models.SubjectStudent.pointFifSec.label('Điểm 15p lần 2'),
-                        models.SubjectStudent.pointFirstLast.label('Điểm 15p lần 3'),
-                        models.SubjectStudent.pointSecLast.label('Điểm cuối kỳ 2'),
+                        models.SubjectStudent.pointFirstLast.label('Điểm kỳ 1'),
+                        models.SubjectStudent.pointSecLast.label('Điểm kỳ 2'),
                         models.SubjectStudent.finnalSum.label('Điểm tổng kết')).filter(and_(
                                                             models.SubjectStudent.pointFifFirst <= models.SubjectStudent.pointFifSec,
                                                             models.SubjectStudent.pointFifSec <= models.SubjectStudent.pointFirstLast,
@@ -229,7 +229,7 @@ class GradePointMethod:
                     models.SubjectStudent.subjectId == classSubject.subjectid   
                 )
             ).all()
-
+    
 class GetStudentInClass:
     def getStuIn4(classID: int, db: Session):
         return db.query(models.Student).join(models.Classroom).filter(models.Classroom.id == classID).all()

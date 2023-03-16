@@ -22,9 +22,10 @@ tags_metadata = [
 ]
 descriptionApi = {
     "DucAnhPd": {
-        "ThongKeMonHoc" : "Nhập mã môn học để nhận lại thông tin trả về là 1 bảng các lớp học có số điểm của môn học. subjectid mang giá trị số nguyên dương"
+        "ThongKeMonHoc" : "Nhập mã môn học để nhận lại thông tin trả về là 1 bảng các lớp học có số điểm của môn học. subjectid mang giá trị số nguyên dương",
+        "TimKiemHocSinh": "Nhập một trong các thoomg tin cá nhân của học sinh để nhận lại thông tin của bảng chứa các thông tin cần tìm"
     },
-    "DucANhPd" : {
+    "DucANhNp" : {
         
     }
 }

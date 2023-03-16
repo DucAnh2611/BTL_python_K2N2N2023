@@ -226,23 +226,23 @@ def get_Diem(
         df = pd.DataFrame.from_dict(ClassPoint)
         Lop = df['Lớp'][0]
         subject = df['Môn học'][0]
-        diem = np.round(df['Điểm tổng kết'].mean(), 1)
+        diemTK= np.array([df['Điểm tổng kết']])
+        diem = np.round(np.mean(diemTK), 1)
         return f'Điểm trung bình môn {subject} của lớp {Lop} là {diem}'
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
-@app.get('/student/Avg2Subject', tags= ['Mạnh np'])
-def get_Avg_2_subject(
-    studentid: Union[int, None] = None, 
-    subjectid1: Union[int, None] = None,
-    subjectid2: Union[int, None] = None,
+@app.post('/student/Avg2Subject', tags= ['Mạnh np'],
+          description= ('Nhập mã học sinh, mã của 2 môn học thì sẽ trả về trung bình 2 môn đó'))
+def Avg_2_subject(
+    student: schemas.avg2sub,
     db: Session = Depends(get_db)
 ):
-    if studentid != None or subject1 != None or subject2 != None :
-        if studentid > 0 :
-            if subject1 > 0 and subject2 >0:
-                studentPoint1= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid1))
-                studentPoint2= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid2))
+    if student.studentid != None or student.subject1 != None or student.subject2 != None :
+        if student.studentid > 0 :
+            if student.subject1 > 0 and student.subject2 >0:
+                studentPoint1= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=student.studentid, subjectId=student.subject1))
+                studentPoint2= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=student.studentid, subjectId=student.subject2))
                 df1 = pd.DataFrame.from_dict(studentPoint1)
                 df2 = pd.DataFrame.from_dict(studentPoint2)
                 diemMon1 = df1['Điểm tổng kết'][0]
@@ -250,7 +250,8 @@ def get_Avg_2_subject(
                 subject1 = df1['Môn học'][0]
                 subject2 = df2['Môn học'][0]
                 name = df1['Họ và tên'][0]
-                diemTrungBinh = np.round((diemMon1 +diemMon2)/2 ,1)
+                diem = np.array([diemMon1, diemMon2])
+                diemTrungBinh = np.round(np.mean(diem) ,1)
             else:
                 raise HTTPException(status_code=404, detail={
                 "field": "subject1, subject2",
@@ -267,6 +268,8 @@ def get_Avg_2_subject(
             "errMsg": "Chưa có thông tin"
         })
     return f'Điểm trung bình hai môn {subject1} và {subject2} của {name} là {diemTrungBinh}'
+
+
 #endregion    
 
 #region DucAnh

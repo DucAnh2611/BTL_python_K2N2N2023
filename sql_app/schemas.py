@@ -90,3 +90,8 @@ class ClassID(BaseModel):
 
 class Grade(BaseModel):
     Grade: int
+
+class avg2sub(BaseModel):
+    studentid: int
+    subject1: int
+    subject2: int

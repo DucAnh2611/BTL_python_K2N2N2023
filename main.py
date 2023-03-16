@@ -506,15 +506,19 @@ def Send_Id_Get_ClassSz(
 ):
     if (classID.classID != None and classID.classID > 0):
         classSz = data.GetStudentInClass.getStuIn4(classID = classID.classID, db = db)
+        fullClass = data.ClassroomMethod.get_all(db = db)
         # Tổng số học sinh trong lớp
         num_Stu_inClass = len(np.array(classSz))
-        if (classID.classID > 18):
-            return f"Mã lớp {classID.classID} không tồn tại"
+        # Tổng số lớp
+        allC = len(np.array(fullClass))
+        
+        if (classID.classID > allC):
+            return f"Mã lớp {classID.classID} không tồn tại !"
         else:
-            return f"Tổng số học sinh trong lớp có mã lớp {classID.classID} là {num_Stu_inClass}"
+            return f"Sĩ số lớp có mã lớp {classID.classID} là {num_Stu_inClass} học sinh"
     else:
         raise HTTPException(status_code=404, detail=
-            "Mã lớp không tồn tại hoặc không hợp lệ !"
+            f"Mã lớp {classID.classID} không hợp lệ !"
         )
 
 

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, FastAPI, HTTPException, Path
+from fastapi import FastAPI, Depends, FastAPI, HTTPException, Path, File, UploadFile, status
 from starlette.responses import FileResponse 
 from sqlalchemy.orm import Session
 from typing import Union
@@ -399,7 +399,21 @@ def get_rank(score):
 
 #region numpy câu 2
 
-# mai tớ làm nốt - Hiếu
+@app.post('/numpy/updateStudentScores',
+          tags=['Cập nhật điểm theo môn học'],
+          description=('Nhập tên môn học, sau đó đưa file điểm lên để hệ thống cập nhật'))
+async def update_student_score(
+    file: UploadFile = File(...,description="Upload a file"),
+    db: Session = Depends(get_db)
+):
+    if not file:
+        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST)
+    if file.content_type not in  ['text/csv']:
+        raise HTTPException(status_code = status.HTTP_406_NOT_ACCEPTABLE,detail='file type not allow')
+    df = pd.read_csv(file.file,sep='\t')
+    print(df)
+    return {"file name":file.filename, 
+    "file type": file.content_type}
 
 #endregion
 
@@ -456,7 +470,7 @@ def post_class_scores_by_subject(
 
 #endregion
 
-# region Dũng
+#region Dũng
 # np
 @app.get('/subject/SinhVienTruotMon')
 def get_point_less_than_4 (

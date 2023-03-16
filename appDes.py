@@ -20,3 +20,11 @@ tags_metadata = [
         "description" : "Thống kê điểm của môn theo lớp và Tìm kiếm học sinh có thông tin"
     }
 ]
+descriptionApi = {
+    "DucAnhPd": {
+        "ThongKeMonHoc" : "Nhập mã môn học để nhận lại thông tin trả về là 1 bảng các lớp học có số điểm của môn học. subjectid mang giá trị số nguyên dương"
+    },
+    "DucANhPd" : {
+        
+    }
+}

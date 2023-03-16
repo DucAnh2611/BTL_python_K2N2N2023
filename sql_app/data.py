@@ -23,6 +23,24 @@ class ClassroomMethod:
             )
         ).all()
     
+    def update_class(db: Session, classroom: schemas.Classroom):
+        db_class_update = db.query(models.Classroom).filter(
+            and_(
+                models.Classroom.id == classroom.classid,
+                models.Classroom.grade == classroom.classGrade
+            )
+        ).update({
+            'name': classroom.className,
+            'grade': classroom.classGrade
+        })
+        db.commit()
+        return db.query(models.Classroom).filter(
+            and_(
+                models.Classroom.id == classroom.classid,
+                models.Classroom.grade == classroom.classGrade
+            )
+        ).first()
+    
     def get_all(db:Session):
         return db.query(models.Classroom).all()
 

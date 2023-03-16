@@ -80,3 +80,8 @@ class StudentFind(BaseModel):
     studentFirstLast: Union[float, None] = None
     studentSecLast: Union[float, None] = None
     
+class Classroom(BaseModel):
+    className: str
+    classGrade: int
+    classid: int
+    

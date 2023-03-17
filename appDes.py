@@ -18,6 +18,14 @@ tags_metadata = [
     {
         "name" : "Duc anh pd",
         "description" : "Thống kê điểm của môn theo lớp và Tìm kiếm học sinh có thông tin"
+    },
+    {
+        'name' : 'Mạnh Pandas',
+        "description": 'Hiển thị bảng điểm của học sinh theo mã học sinh và Cập nhật tên lớp và khối theo mã lớp'
+    },
+    {
+        'name' : 'Mạnh Numpy',
+        "description": 'Hiển thị điểm trung bình môn theo mã lớp, mã môn và Hiển thị điểm trung bình 2 môn của học sinh theo mã của 2 môn và mã học sinh'
     }
 ]
 descriptionApi = {
@@ -28,4 +36,5 @@ descriptionApi = {
     "DucANhNp" : {
         
     }
+    
 }

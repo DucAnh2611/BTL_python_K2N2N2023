@@ -167,7 +167,7 @@ def get_student_point_subject(
 @app.post('/student/CapNhatTenLop', 
           tags=['Mạnh Pandas'],
           description=('Cho phép người dùng đổi tên lớp, đổi khối theo id'))
-def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
+def post_classroom(classroom: schemas.Classroom, db : Session = Depends(get_db)):
     result = " "
     if classroom.classid >0 :
         updateData = data.ClassroomMethod.update_class(db, schemas.Classroom(
@@ -184,39 +184,11 @@ def post_student(classroom: schemas.Classroom, db : Session = Depends(get_db)):
 
     return result
 
-@app.get('/subject/DiemCuaMon', 
-         tags = ['Mạnh Pandas'], 
-         description= ('Nhập mã học sinh và mã môn để xem được điểm tổng môn đó theo mã học sinh'))
-def get_point_subject(
-    studentid: Union[int, None] = None, 
-    subjectid: Union[int, None] = None,
-    db: Session = Depends(get_db)
-):
-    if(studentid != None or subjectid !=None):
-        studentPoint= data.SubjectStudentPointMethod.get_student_point(db, schemas.SubjectStudentPointBase(studentId=studentid, subjectId=subjectid))
-        if np.array(studentPoint).size !=0:
-            df = pd.DataFrame.from_dict(studentPoint)
-            diem = df['Điểm tổng kết'][0]
-            name = df['Họ và tên'][0]
-            subject = df['Môn học'][0]
-            return {"result": f'Điểm của {name} với môn {subject} là: {diem}'}
-        else:
-            if np.array(data.StudentMethod.get_byid(db, studentid=studentid)).size == 0:
-                raise HTTPException(status_code=404, detail= {
-                    "field": "studentid",
-                    "errMsg": "Không tồn tại sinh viên"})
-            elif np.array(data.SubjectMethod.get_subject_id(db, id= subjectid)).size == 0:
-                raise HTTPException(status_code=404, detail= {
-                    "field": "subjectid",
-                    "errMsg": "Không tồn tại môn học"})
-    else: 
-        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
-
 #np
-@app.get('/subject/Diem', 
+@app.get('/subject/ClassSubjectAvgPoint', 
          tags= ['Mạnh Numpy'], 
          description= ('Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp'))
-def get_Diem(
+def get_Class_Subject_Avg_Point(
     classid: Union[int, None] = None, 
     subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)

@@ -274,7 +274,7 @@ def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
                 "errMsg" : "Giá trị subjectid không thể nhỏ hơn hoặc bằng 0"
             })
 
-@app.post('/class/TimKiemHocSinh', tags=['Duc anh pd'])
+@app.post('/class/TimKiemHocSinh', tags=['Duc anh pd'], description=appDes.descriptionApi['DucAnhPd']['TimKiemHocSinh'])
 def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(get_db)):
     result = ""
     errorList = []

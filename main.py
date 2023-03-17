@@ -576,11 +576,11 @@ def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(ge
 
         return {
             "Highest": {
-                "msg": f"Học sinh điểm cao nhất mã môn mã môn {classAndPoint.subjectid} khối {classAndPoint.grade}",
+                "msg": f"Học sinh điểm cao nhất mã môn {classAndPoint.subjectid} khối {classAndPoint.grade}",
                 "data": in4HS_max.T
             },
             "Lowest": {
-                "msg": f"Học sinh điểm thấp nhất mã môn mã môn {classAndPoint.subjectid} khối {classAndPoint.grade}",
+                "msg": f"Học sinh điểm thấp nhất mã môn {classAndPoint.subjectid} khối {classAndPoint.grade}",
                 "data": in4HS_min.T
             }
         }
@@ -595,7 +595,7 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     df = pd.DataFrame.from_dict(all_Point)
     df['Trượt'] = np.where(df['Điểm tổng kết'] < 4, 'Trượt', 'Không trượt')
     df_subjects = df[['Môn học', 'Trượt']]
-
+    
     # Số học sinh trượt môn học theo từng môn
     df_failed = df_subjects[df_subjects['Trượt'] == 'Trượt'].groupby(['Môn học']).size().reset_index(name='Tổng số HS trượt')
     

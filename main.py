@@ -495,9 +495,11 @@ def class_scores_by_subject(
 
 #region Dũng
 # np
-@app.get('/subject/SinhVienTruotMon',
-          tags=['Dũng Numpy'],
-          description=('Hiển thị tình trạng của học sinh (trượt hay qua môn)'))
+@app.get('/subject/SinhVienTruotMonToan',
+            tags=['Dũng Numpy'],
+            description=appDes.descriptionApi['DungNumpy']['SinhVienTruotMonToan']
+        )
+
 def get_point_less_than_4 (
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -521,12 +523,13 @@ def get_point_less_than_4 (
             })
     else:
         raise HTTPException(status_code=404, detail=
-            "Chưa có thông tin (studentid: int, subjectid: int)"
+            "Chưa có thông tin (studentid: int)"
         )
 
 @app.post('/subject/GetClassSize',
-          tags=['Dũng Numpy'],
-          description=('Lấy sĩ số lớp dựa theo mã lớp'))
+            tags=['Dũng Numpy'],
+            description=appDes.descriptionApi['DungNumpy']['SiSoLopTheoID']
+        )
 def Send_Id_Get_ClassSz(
     classID: schemas.ClassID, 
     db: Session = Depends(get_db)
@@ -553,8 +556,9 @@ def Send_Id_Get_ClassSz(
 
 # pd
 @app.post('/statistic/class/grade',
-          tags=['Dũng Pandas'],
-          description=('Lấy thông tin học sinh có điểm cao nhất và thấp nhất trong lớp theo môn học'))
+            tags=['Dũng Pandas'],
+            description=appDes.descriptionApi['DungPandas']['ThongTinHSDiemCaoNhatVaThapNhat']
+        )
 def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(get_db)):
     resClass = data.ClassAndStudentAndPointMethod.get_all_point(db, classAndPoint)
     df = pd.DataFrame.from_dict(resClass)
@@ -582,9 +586,10 @@ def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(ge
         }
 
 
-@app.get('/subject/SoSVTruotMonMoiMonHoc',
-          tags=['Dũng Pandas'],
-          description=('Số học sinh trượt môn học'))
+@app.get('/subject/SoHSTruotMonMoiMonHoc',
+            tags=['Dũng Pandas'],
+            description=appDes.descriptionApi['DungPandas']['TongSoHSTruotCacMon']
+        )
 def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     all_Point = data.SubjectAndStudentMethod.get_all_student_all(db)
     df = pd.DataFrame.from_dict(all_Point)
@@ -592,7 +597,7 @@ def get_number_of_failed_students_per_subject(db: Session = Depends(get_db)):
     df_subjects = df[['Môn học', 'Trượt']]
 
     # Số học sinh trượt môn học theo từng môn
-    df_failed = df_subjects[df_subjects['Trượt'] == 'Trượt'].groupby(['Môn học']).size().reset_index(name='Số lượng')
+    df_failed = df_subjects[df_subjects['Trượt'] == 'Trượt'].groupby(['Môn học']).size().reset_index(name='Tổng số HS trượt')
     
     html_chart = df_failed.to_html()
     return HTMLResponse(content=html_chart, status_code=200)

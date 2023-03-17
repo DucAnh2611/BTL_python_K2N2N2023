@@ -34,8 +34,17 @@ tags_metadata = [
     {
         'name' : 'Hiếu Pandas',
         'description': 'Các API ứng dụng Pandas'
-    }
+    },
+    {
+        'name' : 'Dũng Numpy',
+        'description' : 'Hiển thị tình trạng của học sinh (trượt hay qua môn Toán) và Lấy sĩ số lớp dựa theo mã lớp'
+    },
+    {
+        'name' : 'Dũng Pandas',
+        'description' : 'Lấy thông tin học sinh có điểm cao nhất và thấp nhất trong lớp theo môn học và Tổng số học sinh trượt theo từng môn học'
+    },
 ]
+
 descriptionApi = {
     "DucAnhPd": {
         "ThongKeMonHoc" : "Nhập mã môn học để nhận lại thông tin trả về là 1 bảng các lớp học có số điểm của môn học. subjectid mang giá trị số nguyên dương",
@@ -60,7 +69,15 @@ descriptionApi = {
     'Mạnh Numpy':{
         'ClassSubjectAvgPoint' : 'Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp',
         'Avg2Subject': 'Nhập mã học sinh, mã của 2 môn học thì sẽ trả về trung bình 2 môn đó'
-    }
+    },
+    'DungNumpy':{
+        'SinhVienTruotMonToan' : 'Nhập mã học sinh để xem tình trạng (trượt hoặc qua môn) của học sinh kèm theo số điểm',
+        'SiSoLopTheoID' : 'Nhập mã lớp để xem sĩ số của lớp đó là bao nhiêu học sinh'
+    },
+    'DungPandas':{
+        'ThongTinHSDiemCaoNhatVaThapNhat' : 'Nhập mã khối và mã môn học để xem thông tin học sinh điểm cao nhất và thấp nhất của môn trong khối đó',
+        'TongSoHSTruotCacMon' : 'Thống kê tổng số học sinh trượt môn của từng môn học'
+    },
 
     
 }

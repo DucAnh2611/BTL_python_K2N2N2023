@@ -304,7 +304,7 @@ def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(g
     return result
 
 #np:
-@app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Duc anh np'])
+@app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Duc anh np'], description = appDes.descriptionApi['DucAnhNp']['DiemTongKetTrungBinhHocSinh'])
 def get_avg_point_subject(
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -331,7 +331,7 @@ def get_avg_point_subject(
         })
 
 
-@app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Duc anh np'])
+@app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Duc anh np'], description = appDes.descriptionApi['DucAnhNp']['CapNhatDiemTrungBinhMon'])
 def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get_db)):
     result = ""
     errorList = []

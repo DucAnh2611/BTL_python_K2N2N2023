@@ -34,7 +34,8 @@ descriptionApi = {
         "TimKiemHocSinh": "Nhập một trong các thoomg tin cá nhân của học sinh để nhận lại thông tin của bảng chứa các thông tin cần tìm"
     },
     "DucANhNp" : {
-        
+        "DiemTongKetTrungBinhHocSinh": "Nhập mã học sinh để nhận lại điểm tổng kết trung bình (Trung bình của tất cả các môn)",
+        "CapNhatDiemTrungBinhMon": "Nhập các thông tin: studentid, subjectid, điểm 15 phút 2 lần, điểm cuối kỳ 2 lần với method post sau đó sẽ tự động cập nhật thông tin của sinh viên ở môn học đó trong cơ sở dữ liệu"
     }
     
 }

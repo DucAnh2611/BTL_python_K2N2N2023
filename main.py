@@ -285,7 +285,11 @@ def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(g
         list_avai = data.ClassAndStudentAndPointMethod.find_student_point(db, studentInfor)
         if(len(list_avai) !=0): 
             df = pd.DataFrame.from_dict(list_avai)
-            result = df.T
+            dfsize = len(df.index)
+            result = {
+                "msg" : f"có {dfsize} kết quả phù hợp",
+                "data" : df.T
+            }
         else:
             result = {
                 "msg": "không có kết quả phù hợp"

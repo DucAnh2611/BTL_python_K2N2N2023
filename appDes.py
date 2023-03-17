@@ -52,6 +52,15 @@ descriptionApi = {
     'HieuPD' : {
         'DanhSachHocSinhTienBo' : 'Hiển thị những học sinh có điểm các bài kiểm tra tăng dần',
         'ThongKeDiemSo' : 'Thống kê điểm trung bình của từng lớp (từng khối) theo môn học'
+    },
+    'Mạnh Pandas': {
+        'DiemTongKetCuaHocSinh': 'Nhập mã học sinh để có thể xem bảng điểm của học sinh đó',
+        'CapNhatTenLop': 'Cho phép người dùng đổi tên lớp, đổi khối theo id'
+    },
+    'Mạnh Numpy':{
+        'ClassSubjectAvgPoint' : 'Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp',
+        'Avg2Subject': 'Nhập mã học sinh, mã của 2 môn học thì sẽ trả về trung bình 2 môn đó'
     }
+
     
 }

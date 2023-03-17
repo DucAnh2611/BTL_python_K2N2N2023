@@ -134,7 +134,7 @@ def home():
 
 @app.get('/subject/DiemTongKetCuaHocSinh', 
          tags=['Mạnh Pandas'],
-         description=('Nhập mã học sinh để có thể xem bảng điểm của học sinh đó'))
+         description=appDes.descriptionApi['Mạnh Pandas']['DiemTongKetCuaHocSinh'])
 def get_student_point_subject(
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -164,9 +164,9 @@ def get_student_point_subject(
             "errMsg": "Chưa có thông tin"
         })
 
-@app.post('/student/CapNhatTenLop', 
+@app.post('/class/CapNhatTenLop', 
           tags=['Mạnh Pandas'],
-          description=('Cho phép người dùng đổi tên lớp, đổi khối theo id'))
+          description=appDes.descriptionApi['Mạnh Pandas']['CapNhatTenLop'])
 def post_classroom(classroom: schemas.Classroom, db : Session = Depends(get_db)):
     result = " "
     if classroom.classid >0 :
@@ -187,7 +187,7 @@ def post_classroom(classroom: schemas.Classroom, db : Session = Depends(get_db))
 #np
 @app.get('/subject/ClassSubjectAvgPoint', 
          tags= ['Mạnh Numpy'], 
-         description= ('Nhập mã lớp và mã môn để có thể xem được điểm trung bình của môn đó theo lớp'))
+         description=appDes.descriptionApi['Mạnh Numpy']['ClassSubjectAvgPoint'])
 def get_Class_Subject_Avg_Point(
     classid: Union[int, None] = None, 
     subjectid: Union[int, None] = None,
@@ -205,7 +205,7 @@ def get_Class_Subject_Avg_Point(
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
 @app.post('/student/Avg2Subject', tags= ['Mạnh Numpy'],
-          description= ('Nhập mã học sinh, mã của 2 môn học thì sẽ trả về trung bình 2 môn đó'))
+          description=appDes.descriptionApi['Mạnh Numpy']['Avg2Subject'])
 def Avg_2_subject(
     student: schemas.avg2sub,
     db: Session = Depends(get_db)

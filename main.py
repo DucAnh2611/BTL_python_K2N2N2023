@@ -246,7 +246,7 @@ def Avg_2_subject(
 
 #region DucAnh
 #pd:
-@app.get('/statistic/subject/{subjectid}', tags=['Duc anh pd'], description=appDes.descriptionApi['DucAnhPd']['ThongKeMonHoc'])
+@app.get('/statistic/subject/{subjectid}', tags=['Đức Anh Pandas'], description=appDes.descriptionApi['DucAnhPd']['ThongKeMonHoc'])
 def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
     if(subjectid > 0) :
         getSubject = data.SubjectMethod.get_all(db)
@@ -274,7 +274,7 @@ def get_point_subject_class(subjectid: int, db: Session = Depends(get_db)):
                 "errMsg" : "Giá trị subjectid không thể nhỏ hơn hoặc bằng 0"
             })
 
-@app.post('/class/TimKiemHocSinh', tags=['Duc anh pd'])
+@app.post('/class/TimKiemHocSinh', tags=['Đức Anh Pandas'])
 def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(get_db)):
     result = ""
     errorList = []
@@ -304,7 +304,7 @@ def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(g
     return result
 
 #np:
-@app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Duc anh np'], description = appDes.descriptionApi['DucAnhNp']['DiemTongKetTrungBinhHocSinh'])
+@app.get('/subject/DiemTongKetTrungBinhHocSinh', tags=['Đức Anh Numpy'], description = appDes.descriptionApi['DucAnhNp']['DiemTongKetTrungBinhHocSinh'])
 def get_avg_point_subject(
     studentid: Union[int, None] = None,
     db: Session = Depends(get_db)
@@ -331,7 +331,7 @@ def get_avg_point_subject(
         })
 
 
-@app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Duc anh np'], description = appDes.descriptionApi['DucAnhNp']['CapNhatDiemTrungBinhMon'])
+@app.post('/subject/CapNhatDiemTrungBinhMon', tags=['Đức Anh Numpy'], description = appDes.descriptionApi['DucAnhNp']['CapNhatDiemTrungBinhMon'])
 def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get_db)):
     result = ""
     errorList = []
@@ -390,7 +390,7 @@ def post_avg_point(pointList: schemas.SubjectAvgPoint ,db: Session = Depends(get
 
 @app.get('/statistic/ranking',
          tags = ['Hiếu Numpy'],
-         description=('Hiện bảng xếp hạng điểm tổng kết và học lực tương ứng'))
+         description=appDes.descriptionApi['HieuNP']['BangXepHang'])
 
 def get_ranking(
     db: Session = Depends(get_db)
@@ -420,7 +420,7 @@ def get_evaluation(score):
 
 @app.post('/default/calculateIntegration',
           tags=['Hiếu Numpy'],
-          description=('Tính tích phân dựa vào chặn trên, chặn dưới và phương trình đầu vào'))
+          description=appDes.descriptionApi['HieuNP']['TinhTichPhan'])
 def integration_calculation(
     input: schemas.IntegrationInput
 ):
@@ -444,7 +444,7 @@ def integration_calculation(
 
 @app.get('/statistic/whoHasIncreasedTheirScores', 
          tags=['Hiếu Pandas'],
-         description=('Hiển thị những học sinh có điểm các bài kiểm tra tăng dần'))
+         description=appDes.descriptionApi['HieuPD']['DanhSachHocSinhTienBo'])
 def who_has_increased_their_scores(
     db: Session = Depends(get_db)
 ):
@@ -463,7 +463,7 @@ def who_has_increased_their_scores(
 
 @app.post('/statistic/classesScoresBySubject', 
           tags=['Hiếu Pandas'],
-          description=('Thống kê điểm trung bình của từng lớp theo môn học'))
+          description=appDes.descriptionApi['HieuPD']['ThongKeDiemSo'])
 def class_scores_by_subject(
     gradeSubject: schemas.ClassAndSubject,
     db: Session = Depends(get_db)

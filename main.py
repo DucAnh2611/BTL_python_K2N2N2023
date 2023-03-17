@@ -121,7 +121,7 @@ def home():
 #region Manh
 #pd
 
-@app.get('/subject/DiemTongKetCuaHocSinh', 
+@app.get('/subject/DiemTongKetCuaHocSinh/{studentid}', 
          tags=['Mạnh Pandas'],
          description=appDes.descriptionApi['Mạnh Pandas']['DiemTongKetCuaHocSinh'])
 def get_student_point_subject(
@@ -174,7 +174,7 @@ def post_classroom(classroom: schemas.Classroom, db : Session = Depends(get_db))
     return result
 
 #np
-@app.get('/subject/ClassSubjectAvgPoint', 
+@app.get('/subject/ClassSubjectAvgPoint/{classid}/{subjectid}', 
          tags= ['Mạnh Numpy'], 
          description=appDes.descriptionApi['Mạnh Numpy']['ClassSubjectAvgPoint'])
 def get_Class_Subject_Avg_Point(

@@ -19,17 +19,6 @@ import os
 templates = Jinja2Templates(directory="pages/")
 models.Base.metadata.create_all(bind=engine)
 
-description = """
-Bài tập lớn môn **Lập trình python**
-
-## Thành viên nhóm
-
-* **A38253 Nguyễn Hoàng Đức Anh**
-* **A38520 Mai Văn Mạnh**
-* **A38911 Vũ Tiến Dũng**
-* **A41174 Hoàng Chí Hiếu** (_Trưởng nhóm_).
-"""
-
 app = FastAPI(
     title="Quản lý điểm học sinh",
     description=appDes.description,
@@ -132,7 +121,7 @@ def home():
 #region Manh
 #pd
 
-@app.get('/subject/DiemTongKetCuaHocSinh', 
+@app.get('/subject/DiemTongKetCuaHocSinh/{studentid}', 
          tags=['Mạnh Pandas'],
          description=appDes.descriptionApi['Mạnh Pandas']['DiemTongKetCuaHocSinh'])
 def get_student_point_subject(
@@ -185,7 +174,7 @@ def post_classroom(classroom: schemas.Classroom, db : Session = Depends(get_db))
     return result
 
 #np
-@app.get('/subject/ClassSubjectAvgPoint', 
+@app.get('/subject/ClassSubjectAvgPoint/{classid}/{subjectid}', 
          tags= ['Mạnh Numpy'], 
          description=appDes.descriptionApi['Mạnh Numpy']['ClassSubjectAvgPoint'])
 def get_Class_Subject_Avg_Point(
@@ -296,7 +285,11 @@ def post_find_student(studentInfor: schemas.StudentFind, db: Session = Depends(g
         list_avai = data.ClassAndStudentAndPointMethod.find_student_point(db, studentInfor)
         if(len(list_avai) !=0): 
             df = pd.DataFrame.from_dict(list_avai)
-            result = df.T
+            dfsize = len(df.index)
+            result = {
+                "msg" : f"có {dfsize} kết quả phù hợp",
+                "data" : df.T
+            }
         else:
             result = {
                 "msg": "không có kết quả phù hợp"

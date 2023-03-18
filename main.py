@@ -334,6 +334,10 @@ def get_ranking(
     df = pd.DataFrame.from_dict(scoreboard)
     df['Học lực'] = get_evaluation(df['Điểm tổng kết'])
     table = pd.DataFrame.from_dict(df).to_html()
+    text_file = open("student_list.html", "w")
+    text_file.write(table)
+    text_file.close()
+    webbrowser.open(os.getcwd() + '/student_list.html')
     
     return HTMLResponse(content=table, status_code=200)
 
@@ -386,6 +390,10 @@ def who_has_increased_their_scores(
     studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
     if len(studentList) != 0:
         table = pd.DataFrame.from_dict(studentList).to_html()
+        text_file = open("student_list.html", "w")
+        text_file.write(table)
+        text_file.close()
+        webbrowser.open(os.getcwd() + '/student_list.html')
         return HTMLResponse(content=table, status_code=200)
     else:
         return {
@@ -412,9 +420,12 @@ def class_scores_by_subject(
         else:
             studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
             if len(studentList) != 0:
-                table = pd.DataFrame.from_dict(studentList)
-                table['Điểm trung bình'] = table['Điểm trung bình'].round(decimals=2)
-                return HTMLResponse(content = table.to_html(), status_code=200)
+                table = pd.DataFrame.from_dict(studentList).to_html()
+                text_file = open("student_list.html", "w")
+                text_file.write(table)
+                text_file.close()
+                webbrowser.open(os.getcwd() + '/student_list.html')
+                return HTMLResponse(content=table, status_code=200)
             else:
                 return {
                     "msg": "Không tồn tại bản ghi nào!"

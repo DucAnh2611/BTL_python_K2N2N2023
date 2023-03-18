@@ -55,64 +55,6 @@ def home():
                     <li>A41174 Hoàng Chí Hiếu</li>
                 </ul>
             </div>
-            <br> </br>
-            <div> 
-                <h2>Đề tài: Quản lý điểm học sinh</h2>
-                <h3>Phân công công việc:</h3>
-                <li>A38253 Nguyễn Hoàng Đức Anh</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>
-                <li>A38520 Mai Văn Mạnh</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>         
-                <li>A38911 Vũ Tiến Dũng</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>
-                <li>A41174 Hoàng Chí Hiếu</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>
-            </div>
-
         </body>
     </html>
     '''

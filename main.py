@@ -135,7 +135,7 @@ def get_Class_Subject_Avg_Point(
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
-@app.post('/student/Avg2Subject', tags= ['Mạnh Numpy'],
+@app.post('/subject/Avg2Subject', tags= ['Mạnh Numpy'],
           description=appDes.descriptionApi['Mạnh Numpy']['Avg2Subject'])
 def Avg_2_subject(
     student: schemas.avg2sub,

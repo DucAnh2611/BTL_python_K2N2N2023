@@ -470,8 +470,9 @@ def class_scores_by_subject(
         else:
             studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
             if len(studentList) != 0:
-                table = pd.DataFrame.from_dict(studentList).to_html()
-                return HTMLResponse(content=table, status_code=200)
+                table = pd.DataFrame.from_dict(studentList)
+                table['Điểm trung bình'] = table['Điểm trung bình'].round(decimals=2)
+                return HTMLResponse(content = table.to_html(), status_code=200)
             else:
                 return {
                     "msg": "Không tồn tại bản ghi nào!"

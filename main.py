@@ -523,7 +523,7 @@ def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(ge
         max_Point = df['Điểm tổng kết'].idxmax()
         min_Point = df['Điểm tổng kết'].idxmin()
 
-        # # Lấy in4 học sinh max, min
+        # Lấy in4 học sinh max, min
         in4HS_max = df.iloc[[max_Point]]
         in4HS_min = df.iloc[[min_Point]]
 

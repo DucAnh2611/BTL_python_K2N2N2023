@@ -247,13 +247,19 @@ def get_avg_point_subject(
     if( studentid != None):
         if(studentid >0):
             studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid);
-            df = pd.DataFrame.from_dict(studentInClass)
-            
-            diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
-            name = df['Họ và tên'][0]
-            return {
-                "msg": f'Điểm trung bình của {name} là: {diemTrungBinh}',
-                "data": diemTrungBinh}
+            if np.array(studentInClass).size !=0:
+                df = pd.DataFrame.from_dict(studentInClass)
+                
+                diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
+                name = df['Họ và tên'][0]
+                return {
+                    "msg": f'Điểm trung bình của {name} là: {diemTrungBinh}',
+                    "data": diemTrungBinh}
+            else :
+                raise HTTPException(status_code=404, detail={
+                    "field": "studentid",
+                    "errMsg": "Không tồn tại học sinh này!"
+                }) 
         else:
             raise HTTPException(status_code=404, detail={
                 "field": "studentid",

@@ -124,17 +124,25 @@ def get_Class_Subject_Avg_Point(
     subjectid: Union[int, None] = None,
     db: Session = Depends(get_db)
 ):
-    if(classid != None or subjectid != None):
-        ClassPoint = data.GradePointMethod.get_SubjectPointfromClass(db, schemas.ClassPoint(classid= classid, subjectid= subjectid))
-        df = pd.DataFrame.from_dict(ClassPoint)
-        Lop = df['Lớp'][0]
-        subject = df['Môn học'][0]
-        diemTK= np.array([df['Điểm tổng kết']])
-        diem = np.round(np.mean(diemTK), 1)
-        return f'Điểm trung bình môn {subject} của lớp {Lop} là {diem}'
+    if classid > 0 :
+        if subjectid >0:
+            ClassPoint = data.GradePointMethod.get_SubjectPointfromClass(db, schemas.ClassPoint(classid= classid, subjectid= subjectid))
+            df = pd.DataFrame.from_dict(ClassPoint)
+            Lop = df['Lớp'][0]
+            subject = df['Môn học'][0]
+            diemTK= np.array([df['Điểm tổng kết']])
+            diem = np.round(np.mean(diemTK), 1)
+            return f'Điểm trung bình môn {subject} của lớp {Lop} là {diem}'
+        else:
+            raise HTTPException(status_code=404, detail={
+                "field": "subjectid",
+                "errMsg": "Thông tin không hợp lệ"
+                })
     else: 
-        raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
-
+        raise HTTPException(status_code=404, detail={
+            "field": "classid",
+            "errMsg": "Thông tin không hợp lệ"
+        })
 @app.post('/subject/Avg2Subject', tags= ['Mạnh Numpy'],
           description=appDes.descriptionApi['Mạnh Numpy']['Avg2Subject'])
 def Avg_2_subject(

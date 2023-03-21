@@ -55,64 +55,6 @@ def home():
                     <li>A41174 Hoàng Chí Hiếu</li>
                 </ul>
             </div>
-            <br> </br>
-            <div> 
-                <h2>Đề tài: Quản lý điểm học sinh</h2>
-                <h3>Phân công công việc:</h3>
-                <li>A38253 Nguyễn Hoàng Đức Anh</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>
-                <li>A38520 Mai Văn Mạnh</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>         
-                <li>A38911 Vũ Tiến Dũng</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>
-                <li>A41174 Hoàng Chí Hiếu</li>
-                <ul>
-                    <li> GET:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                    <li> POST:</li>
-                    <ul>
-                        <li>numpy: </li>
-                        <li>pandas: </li>
-                    </ul>
-                </ul>
-            </div>
-
         </body>
     </html>
     '''
@@ -193,7 +135,7 @@ def get_Class_Subject_Avg_Point(
     else: 
         raise HTTPException(status_code=404, detail="Chưa có thông tin nào về học sinh được đưa ra (studentid: int, subjectid: int)")
 
-@app.post('/student/Avg2Subject', tags= ['Mạnh Numpy'],
+@app.post('/subject/Avg2Subject', tags= ['Mạnh Numpy'],
           description=appDes.descriptionApi['Mạnh Numpy']['Avg2Subject'])
 def Avg_2_subject(
     student: schemas.avg2sub,
@@ -305,13 +247,19 @@ def get_avg_point_subject(
     if( studentid != None):
         if(studentid >0):
             studentInClass = data.SubjectAndStudentMethod.get_all_student(db, studentid=studentid);
-            df = pd.DataFrame.from_dict(studentInClass)
-            
-            diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
-            name = df['Họ và tên'][0]
-            return {
-                "msg": f'Điểm trung bình của {name} là: {diemTrungBinh}',
-                "data": diemTrungBinh}
+            if np.array(studentInClass).size !=0:
+                df = pd.DataFrame.from_dict(studentInClass)
+                
+                diemTrungBinh = np.round(df['Điểm tổng kết'].sum() / len(df['Điểm tổng kết'].to_list()), 1)
+                name = df['Họ và tên'][0]
+                return {
+                    "msg": f'Điểm trung bình của {name} là: {diemTrungBinh}',
+                    "data": diemTrungBinh}
+            else :
+                raise HTTPException(status_code=404, detail={
+                    "field": "studentid",
+                    "errMsg": "Không tồn tại học sinh này!"
+                }) 
         else:
             raise HTTPException(status_code=404, detail={
                 "field": "studentid",
@@ -392,6 +340,10 @@ def get_ranking(
     df = pd.DataFrame.from_dict(scoreboard)
     df['Học lực'] = get_evaluation(df['Điểm tổng kết'])
     table = pd.DataFrame.from_dict(df).to_html()
+    text_file = open("student_list.html", "w")
+    text_file.write(table)
+    text_file.close()
+    webbrowser.open(os.getcwd() + '/student_list.html')
     
     return HTMLResponse(content=table, status_code=200)
 
@@ -444,6 +396,10 @@ def who_has_increased_their_scores(
     studentList = data.StudentWithIncreasingScoresMethod.get_list(db)
     if len(studentList) != 0:
         table = pd.DataFrame.from_dict(studentList).to_html()
+        text_file = open("student_list.html", "w")
+        text_file.write(table)
+        text_file.close()
+        webbrowser.open(os.getcwd() + '/student_list.html')
         return HTMLResponse(content=table, status_code=200)
     else:
         return {
@@ -471,6 +427,10 @@ def class_scores_by_subject(
             studentList = data.ClassAndSubjectMethod.get_list(gradeSubject, db)
             if len(studentList) != 0:
                 table = pd.DataFrame.from_dict(studentList).to_html()
+                text_file = open("student_list.html", "w")
+                text_file.write(table)
+                text_file.close()
+                webbrowser.open(os.getcwd() + '/student_list.html')
                 return HTMLResponse(content=table, status_code=200)
             else:
                 return {

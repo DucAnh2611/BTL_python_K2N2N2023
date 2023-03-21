@@ -557,7 +557,7 @@ def post_static(classAndPoint: schemas.ClassAndSubject, db: Session = Depends(ge
     df = pd.DataFrame.from_dict(resClass)
     if (classAndPoint.grade < 10 or classAndPoint.grade > 12):
         return "Dữ liệu chỉ có trong các khối lớp cấp 3!"
-    elif (classAndPoint.subjectid < 0 or classAndPoint.subjectid > 10):
+    elif (classAndPoint.subjectid <= 0 or classAndPoint.subjectid > 10):
         return "Chỉ có dữ liệu môn học từ 1-10"
     else:
         max_Point = df['Điểm tổng kết'].idxmax()
